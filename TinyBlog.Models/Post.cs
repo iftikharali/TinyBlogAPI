@@ -20,10 +20,10 @@ namespace TinyBlog.Models
         public string Content { get; set; }
         public bool IsPublished { get; set; } = false;
         public bool IsActive { get; set; } = true;
-        public int Blog_Id { get; set; }
-        public string CreatedAt { get; set; }
-        public Guid CreatedBy { get; set; }
-        public string UpdatedAt { get; set; }
-        public Guid UpdatedBy { get; set; }
+        public int BlogID { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public int UpdatedBy { get; set; }
     }
 }

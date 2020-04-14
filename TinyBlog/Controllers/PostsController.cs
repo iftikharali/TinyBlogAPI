@@ -9,7 +9,7 @@ using TinyBlog.Repositories.Interfaces;
 
 namespace TinyBlog.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/post/")]
     [ApiController]
     public class PostsController : ControllerBase
     {
@@ -20,6 +20,7 @@ namespace TinyBlog.Controllers
         }
         // GET: api/Posts
         [HttpGet]
+        [Route("~/api/v1/posts")]
         public IEnumerable<Post> Get()
         {
             return postRepository.GetPost(0, 1, 5);

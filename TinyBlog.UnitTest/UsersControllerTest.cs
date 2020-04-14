@@ -21,7 +21,7 @@ namespace TinyBlog.UnitTest
         {
             IUserRepository userRepository = new UserRepository();
             IUserService userService = new UserService();
-            UsersController usersController = new UsersController(userRepository,userService);
+            Route usersController = new Route(userRepository,userService);
             List<User> users = usersController.Get().ToList();
             Assert.NotNull(users);
         }
@@ -30,7 +30,7 @@ namespace TinyBlog.UnitTest
         {
             IUserRepository userRepository = new UserRepository();
             IUserService userService = new UserService();
-            UsersController usersController = new UsersController(userRepository,userService);
+            Route usersController = new Route(userRepository,userService);
             var users = usersController.Get(5);
             Assert.NotNull(users);
         }
@@ -39,7 +39,7 @@ namespace TinyBlog.UnitTest
         {
             IUserRepository userRepository = new UserRepository();
             IUserService userService = new UserService();
-            UsersController usersController = new UsersController(userRepository,userService);
+            Route usersController = new Route(userRepository,userService);
             User user = new User();
             user.Name = "FirstUser";
             user.Email = "SomeEmail";
@@ -53,7 +53,7 @@ namespace TinyBlog.UnitTest
         {
             IUserRepository userRepository = new UserRepository();
             IUserService userService = new UserService();
-            UsersController usersController = new UsersController(userRepository,userService);
+            Route usersController = new Route(userRepository,userService);
             User invalidUser = new User();
             invalidUser.Name = "FirstUser";
             usersController.ModelState.AddModelError("Email", "Email is mandatory");

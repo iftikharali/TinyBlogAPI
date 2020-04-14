@@ -10,7 +10,7 @@ using TinyBlog.Repositories.Interfaces;
 
 namespace TinyBlog.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class BlogsController : ControllerBase
     {

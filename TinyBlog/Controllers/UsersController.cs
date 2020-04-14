@@ -13,19 +13,20 @@ using TinyBlog.Services.Interfaces;
 namespace TinyBlog.Controllers
 {
     
-    [Authorize]
-    [Route("api/[controller]")]
+    //[Authorize]
+    [Route("api/v1/")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class Route : ControllerBase
     {
         IUserRepository userRepository;
         IUserService _userService;
-        public UsersController(IUserRepository userRepository,IUserService userService)
+        public Route(IUserRepository userRepository,IUserService userService)
         {
             this.userRepository = userRepository;
             this._userService = userService;
         }
         // GET: api/User
+        [Route("users")]
         [HttpGet]
         public IEnumerable<User> Get()
         {
@@ -33,7 +34,7 @@ namespace TinyBlog.Controllers
         }
 
         // GET: api/User/5
-        [HttpGet("{id}")]
+        [HttpGet("user/{id}")]
         public User Get(int id)
         {
             User user = new User();
@@ -45,6 +46,7 @@ namespace TinyBlog.Controllers
         }
 
         // POST: api/User
+        [Route("user")]
         [HttpPost]
         public IActionResult Post([FromBody] User user)
         {
@@ -57,20 +59,20 @@ namespace TinyBlog.Controllers
         }
 
         // PUT: api/User/5
-        [HttpPut("{id}")]
+        [HttpPut("user/{id}")]
         public void Put(int id, [FromBody] string name)
         {
             userRepository.UpdateUserName(name);
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
+        [HttpDelete("user/{id}")]
         public void Delete(int id)
         {
             userRepository.DeleteUser(id);
         }
         [AllowAnonymous]
-        [HttpPost("/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] User userParam)
         {
             var user = await _userService.Authenticate(userParam.Email, userParam.Password);

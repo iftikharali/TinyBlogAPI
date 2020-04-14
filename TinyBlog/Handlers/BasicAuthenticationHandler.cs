@@ -14,10 +14,12 @@ using TinyBlog.Services.Interfaces;
 
 namespace TinyBlog.Handlers
 {
-    public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+
+    public class BasicAuthenticationHandler :  AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private readonly IUserService _userService;
-        public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
+        public BasicAuthenticationHandler(
+            IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
