@@ -17,6 +17,12 @@ using Microsoft.AspNetCore.Authentication;
 using TinyBlog.Handlers;
 using TinyBlog.Services.Interfaces;
 using TinyBlog.Services;
+using Microsoft.AspNet.OData.Extensions;
+using Microsoft.OData.Edm;
+using Microsoft.AspNet.OData.Builder;
+using TinyBlog.Models;
+using Microsoft.AspNet.OData.Formatter;
+using Microsoft.Net.Http.Headers;
 
 namespace TinyBlog
 {
@@ -34,6 +40,18 @@ namespace TinyBlog
         {
             services.AddCors();
             services.AddControllers();
+            services.AddOData();
+            services.AddMvcCore(options =>
+            {
+                foreach (var outputFormatter in options.OutputFormatters.OfType<ODataOutputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
+                {
+                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                }
+                foreach (var inputFormatter in options.InputFormatters.OfType<ODataInputFormatter>().Where(_ => _.SupportedMediaTypes.Count == 0))
+                {
+                    inputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/prs.odatatestxx-odata"));
+                }
+            });
             //services.AddRazorPages();
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             // configure basic authentication 
@@ -50,20 +68,12 @@ namespace TinyBlog
                         Description = "A simple and easy blog which anyone love to blog"
                     });
             });
-            //services.AddSwaggerGen(c =>
-            //{
-            //    c.SwaggerDoc("v1", new Swashbuckle.AspNetCore.Swagger.Info
-            //    {
-            //        Version = "v1",
-            //        Title = "Tiny Blog API",
-            //        Description = "A simple and easy blog which anyone love to blog."
-            //    });
-            //});
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddSingleton<IBlogRepository, BlogRepository>();
 
             services.AddScoped<IUserService, UserService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,8 +99,23 @@ namespace TinyBlog
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tiny Blog V1");
             });
 
-            app.UseEndpoints(endpoint => { endpoint.MapControllers(); });
-            //app.UseMvc();
+            app.UseEndpoints(endpoint => { 
+                endpoint.MapControllers();
+                //endpoint.Select().OrderBy().MaxTop(50).Count().Filter().Expand();
+                //endpoint.MapODataRoute("odata", "odata", GetEdmModel());
+            });
+            //app.UseMvc(routeBuilder =>
+            //{
+            //    routeBuilder.EnableDependencyInjection();
+            //    routeBuilder.Expand().Select().Count().Filter().OrderBy();
+            //});
         }
+        //private IEdmModel GetEdmModel()
+        //{
+        //    var odataBuilder = new ODataConventionModelBuilder();
+        //    odataBuilder.EntitySet<Blog>("Blog");
+
+        //    return odataBuilder.GetEdmModel();
+        //}
     }
 }

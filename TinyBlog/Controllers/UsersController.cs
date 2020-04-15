@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +27,9 @@ namespace TinyBlog.Controllers
             this._userService = userService;
         }
         // GET: api/User
-        [Route("users")]
+        [Route("~/api/v1/users")]
         [HttpGet]
+        //[EnableQuery()]
         public IEnumerable<User> Get()
         {
             return userRepository.GetUsers();
