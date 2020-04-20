@@ -35,12 +35,12 @@ namespace TinyBlog.Repositories
             return _context.DeleteUser(UserId);
         }
 
-        public bool DeleteUser(int Id)
+        public bool DeleteUser(uint Id)
         {
             return _context.DeleteUser(Id);
         }
 
-        public User GetUser(int Id)
+        public User GetUser(uint Id)
         {
             return _context.GetUser(Id);
         }

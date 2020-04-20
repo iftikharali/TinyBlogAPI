@@ -22,7 +22,7 @@ namespace TinyBlog.DAL
             return true;
         }
 
-        public User GetUser(int id)
+        public User GetUser(uint id)
         {
             User user = new User();
             user.ID = id;
@@ -35,7 +35,7 @@ namespace TinyBlog.DAL
         {
             User newUser = new User();
             Random r = new Random();
-            newUser.ID = r.Next();
+            newUser.ID = (uint)r.Next();
             newUser.UserID = Guid.NewGuid();
             newUser.Name = "Name";
             return newUser;
@@ -64,7 +64,7 @@ namespace TinyBlog.DAL
             return users;
         }
 
-        public bool DeleteUser(int id)
+        public bool DeleteUser(uint id)
         {
             return true;
         }

@@ -9,7 +9,7 @@ namespace TinyBlog.Repositories.Interfaces
     public interface IUserRepository
     {
         IEnumerable<User> GetUsers();
-        User GetUser(int Id);
+        User GetUser(uint Id);
         User GetUser(Guid UserId);
         bool UpdateUserName(string Name);
         bool UpdateUserEmail(string Email);
@@ -17,7 +17,7 @@ namespace TinyBlog.Repositories.Interfaces
         bool UpdateUserPhone(string PhoneNumber);
         bool DeleteUser(User user);
         bool DeleteUser(Guid UserId);
-        bool DeleteUser(int Id);
+        bool DeleteUser(uint Id);
         User CreateUser(User user);
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNet.OData;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +16,11 @@ namespace TinyBlog.Controllers
     //[Authorize]
     [Route("api/v1/")]
     [ApiController]
-    public class Route : ControllerBase
+    public class UsersController : ControllerBase
     {
         IUserRepository userRepository;
         IUserService _userService;
-        public Route(IUserRepository userRepository,IUserService userService)
+        public UsersController(IUserRepository userRepository,IUserService userService)
         {
             this.userRepository = userRepository;
             this._userService = userService;
@@ -62,14 +61,14 @@ namespace TinyBlog.Controllers
 
         // PUT: api/User/5
         [HttpPut("user/{id}")]
-        public void Put(int id, [FromBody] string name)
+        public void Put(uint id, [FromBody] string name)
         {
             userRepository.UpdateUserName(name);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("user/{id}")]
-        public void Delete(int id)
+        public void Delete(uint id)
         {
             userRepository.DeleteUser(id);
         }

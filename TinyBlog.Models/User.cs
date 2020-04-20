@@ -8,9 +8,9 @@ namespace TinyBlog.Models
 {
     public class User
     {
-        public int ID { get; set; }
-        public Guid UserID { get; set; }
-
+        public uint UserKey { get; set; }
+        public Guid UserGuid { get; set; }
+        public uint UserID { get; set; }
         [Required]
         public string Name { get; set; }
         public DateTime DateOfBirth { get; set; }
@@ -24,14 +24,13 @@ namespace TinyBlog.Models
         public string ImageUrl { get; set; }
         public bool IsActive { get; set; } = true;
         public int Vote { get; set; }
-
         public DateTime DateOfJoining { get; set; }
         public DateTime LastActive { get; set; }
-        ICollection<Blog> Blogs { get; set; }
-        ICollection<Comment> Comments { get; set; }
+        public ICollection<Blog> Blogs { get; set; }
+        public ICollection<Comment> Comments { get; set; }
         public DateTime CreatedAt { get; set; }
-        public int CreatedBy { get; set; }
+        public User CreatedBy { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public int UpdatedBy { get; set; }
+        public User UpdatedBy { get; set; }
     }
 }

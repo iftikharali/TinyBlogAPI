@@ -50,7 +50,27 @@ namespace TinyBlog.Repositories
             List<Post> posts = new List<Post>()
             {
                 new Post()
+                {
+                    Title = "First",
+                    Url =  "http://localhost:4200/post/320/blog+title+new+url",
+                    MainContentImageUrl =  "http://localhost:4200/assets/images/blog.jpg",
+                    Excerpt = "First excerpt",
+                    Tags = new List<Tag>(){new Tag() },
+                    Category = new Category() { ID = 7, Name = "Digital Science" },
+                    Votes = 14
+
+                }
             };
+            posts.Add(new Post()
+            {
+                Title = "Second",
+                Url = "http://localhost:4200/post/320/blog+title+new+url",
+                MainContentImageUrl = "http://localhost:4200/assets/images/blog.jpg",
+                Excerpt = "Second excerpt",
+                Tags = new List<Tag>() { new Tag() },
+                Category = new Category() { ID = 8, Name = "Artificial Intelligence" },
+                Votes = 149
+            }); ;
             return posts;
         }
 
@@ -60,6 +80,8 @@ namespace TinyBlog.Repositories
             {
                 new Post()
             };
+
+            posts.Add(new Post());
             return posts;
         }
 
