@@ -39,7 +39,7 @@ namespace TinyBlog.Controllers
         public User Get(int id)
         {
             User user = new User();
-            user.ID = 234234;
+            user.UserKey = 234234;
             user.Password = "asdf";
             user.Email = "asdomerkg";
             return user;
@@ -52,7 +52,7 @@ namespace TinyBlog.Controllers
         public IActionResult Post([FromBody] User user)
         {
             if(ModelState.IsValid)
-            return CreatedAtAction(nameof(Get), new { id = user.ID }, user);
+            return CreatedAtAction(nameof(Get), new { UserKey = user.UserKey }, user);
             else
             {
                 return BadRequest(ModelState);

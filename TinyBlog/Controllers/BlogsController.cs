@@ -39,7 +39,7 @@ namespace TinyBlog.Controllers
         public IActionResult Post([FromBody] Blog blog)
         {
             blogRepository.CreateBlog(blog);
-            return CreatedAtAction(nameof(Get), new { blog_Id = blog.ID }, blog);
+            return CreatedAtAction(nameof(Get), new { BlogKey = blog.BlogKey }, blog);
         }
 
         // PUT: api/Blogs/5

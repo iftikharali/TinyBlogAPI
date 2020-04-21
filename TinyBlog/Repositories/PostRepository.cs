@@ -21,7 +21,7 @@ namespace TinyBlog.Repositories
             return true;
         }
 
-        public bool DeleteComment(int id)
+        public bool DeleteComment(uint id)
         {
             return true;
         }
@@ -31,7 +31,7 @@ namespace TinyBlog.Repositories
             return true;
         }
 
-        public Comment getComment(int post_Id, int comment_id)
+        public Comment getComment(uint comment_id)
         {
             return new Comment();
         }
@@ -47,30 +47,33 @@ namespace TinyBlog.Repositories
 
         public IEnumerable<Post> GetPost(int StartPage, int NumberOfPage, int NumberOfRecordPerPage)
         {
-            List<Post> posts = new List<Post>()
-            {
-                new Post()
-                {
-                    Title = "First",
-                    Url =  "http://localhost:4200/post/320/blog+title+new+url",
-                    MainContentImageUrl =  "http://localhost:4200/assets/images/blog.jpg",
-                    Excerpt = "First excerpt",
-                    Tags = new List<Tag>(){new Tag() },
-                    Category = new Category() { ID = 7, Name = "Digital Science" },
-                    Votes = 14
+            List<Post> posts = new List<Post>();
+            //{
+            //    new Post()
+            //    {
+            //        Title = "First",
+            //        Url =  "http://localhost:4200/post/320/blog+title+new+url",
+            //        MainContentImageUrl =  "http://localhost:4200/assets/images/blog.jpg",
+            //        Excerpt = "First excerpt",
+            //        Tags = new List<Tag>(){new Tag() },
+            //        Category = new Category() { CategoryKey = 7, Name = "Digital Science" },
+            //        Votes = 14
 
-                }
-            };
-            posts.Add(new Post()
+            //    }
+            //};
+            for (int i = 1; i <= 107; i++)
             {
-                Title = "Second",
-                Url = "http://localhost:4200/post/320/blog+title+new+url",
-                MainContentImageUrl = "http://localhost:4200/assets/images/blog.jpg",
-                Excerpt = "Second excerpt",
-                Tags = new List<Tag>() { new Tag() },
-                Category = new Category() { ID = 8, Name = "Artificial Intelligence" },
-                Votes = 149
-            }); ;
+                posts.Add(new Post()
+                {
+                    Title = "General Post " + i,
+                    Url = "http://localhost:4200/post/320/blog+title+new+url",
+                    MainContentImageUrl = "http://localhost:4200/assets/images/blog.jpg",
+                    Excerpt = "Second excerpt " + i,
+                    Tags = new List<Tag>() { new Tag() },
+                    Category = new Category() { CategoryKey = (uint)(8+i), Name = "Artificial Intelligence" },
+                    Votes = 149
+                });
+            }
             return posts;
         }
 
@@ -90,10 +93,10 @@ namespace TinyBlog.Repositories
             return new Post();
         }
 
-        public Comment UpdateComment(int id, string commentContent)
+        public Comment UpdateComment(uint id, string commentContent)
         {
             Comment comment = new Comment();
-            comment.ID = id;
+            comment.CommentKey = id;
             comment.Content = commentContent;
             return comment;
         }

@@ -54,7 +54,7 @@ namespace TinyBlog.Handlers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier,user.ID.ToString()),
+                new Claim(ClaimTypes.NameIdentifier,user.UserKey.ToString()),
                 new Claim(ClaimTypes.Name,user.Email),
             };
             var identity = new ClaimsIdentity(claims, Scheme.Name);

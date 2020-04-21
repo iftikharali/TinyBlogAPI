@@ -15,10 +15,10 @@ namespace TinyBlog.Repositories.Interfaces
         bool UpdateInformation(int id, string PostContent);
         bool DeletePost(int Id);
         bool CreatePost(Post post);
-        IEnumerable<Comment> getComments(int post_Id);
-        Comment getComment(int post_Id, int comment_id);
+        IEnumerable<Comment> getComments(int postId);
+        Comment getComment(uint commentId);
         Comment CreateComment(string commentContent);
-        Comment UpdateComment(int id, string commentContent);
-        bool DeleteComment(int id);
+        Comment UpdateComment(uint Commentid, string commentContent);
+        bool DeleteComment(uint Commentid);
     }
 }

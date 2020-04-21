@@ -5,6 +5,11 @@ using System.Threading.Tasks;
 
 namespace TinyBlog.Models
 {
+    public class Recommend
+    {
+        public User RecommendBy { get; set; }
+        public User RecommendTo { get; set; }
+    }
     public class Blog
     {
         public Blog()
@@ -30,15 +35,11 @@ namespace TinyBlog.Models
         public IEnumerable<Tag> Tags { get; set; }
         public bool IsActive { get; set; } = true;
         public List<User> Subscribers { get; set; }
+        public int Votes { get; set; }
         /// <summary>
-        /// This will be similar to Vote user can recommend this blog t
-        /// </summary>
-        public int Recommend { get; set; }
-        /// <summary>
-        /// consins key as recomender user id and value as recomended by user id.
         /// When user Recommend he/she can add users as well whome he specifically want to recommend
         /// </summary>
-        public Dictionary<int,int> RecommendedTo { get; set; }
+        public List<Recommend> Recommends { get; set; }
         public DateTime CreatedAt { get; set; }
         public User CreatedBy { get; set; }
         public DateTime UpdatedAt { get; set; }

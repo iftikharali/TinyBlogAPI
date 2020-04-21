@@ -61,9 +61,9 @@ namespace TinyBlog.Controllers
         }
 
         [HttpGet("{post_Id}/comment/{comment_id}")]
-        public Comment comments(int post_Id, int comment_id)
+        public Comment comments(int post_Id, uint comment_id)
         {
-            return postRepository.getComment(post_Id, comment_id);
+            return postRepository.getComment(comment_id);
         }
         [HttpPost("{post_Id}/comment")]
         public Comment Create(int post_Id, [FromBody] string commentContent)
@@ -72,12 +72,12 @@ namespace TinyBlog.Controllers
         }
 
         [HttpPut("{post_Id}/comment/{id}")]
-        public Comment Update(int post_Id,int id, [FromBody] string commentContent)
+        public Comment Update(int post_Id,uint id, [FromBody] string commentContent)
         {
             return postRepository.UpdateComment(id, commentContent);
         }
         [HttpDelete("{post_Id}/comment/{id}")]
-        public bool Delete(int post_Id,int id)
+        public bool Delete(int post_Id,uint id)
         {
             return postRepository.DeleteComment(id);
            

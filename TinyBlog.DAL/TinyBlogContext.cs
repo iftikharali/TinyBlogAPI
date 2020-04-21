@@ -25,8 +25,8 @@ namespace TinyBlog.DAL
         public User GetUser(uint id)
         {
             User user = new User();
-            user.ID = id;
-            user.UserID = Guid.NewGuid();
+            user.UserKey = id;
+            user.UserGuid = Guid.NewGuid();
             user.Name = "Name";
             return user;
         }
@@ -35,16 +35,16 @@ namespace TinyBlog.DAL
         {
             User newUser = new User();
             Random r = new Random();
-            newUser.ID = (uint)r.Next();
-            newUser.UserID = Guid.NewGuid();
+            newUser.UserKey = (uint)r.Next();
+            newUser.UserGuid = Guid.NewGuid();
             newUser.Name = "Name";
             return newUser;
         }
 
-        public User GetUser(Guid userId)
+        public User GetUser(Guid userGuid)
         {
             User user = new User();
-            user.UserID = userId;
+            user.UserGuid = userGuid;
             user.Name = "Name";
             return user;
         }
@@ -55,7 +55,7 @@ namespace TinyBlog.DAL
             for(int i = 0; i < 5; i++)
             {
                 User user = new User();
-                user.UserID = Guid.NewGuid();
+                user.UserGuid = Guid.NewGuid();
                 user.Name = "Name"+(i+1);
                 user.Email = "email" + (i + 1) + "@test.com";
                 user.Password = "Password@123";
@@ -64,7 +64,7 @@ namespace TinyBlog.DAL
             return users;
         }
 
-        public bool DeleteUser(uint id)
+        public bool DeleteUser(uint UserKey)
         {
             return true;
         }
