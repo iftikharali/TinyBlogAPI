@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TinyBlog.Models;
@@ -9,6 +10,7 @@ using TinyBlog.Repositories.Interfaces;
 
 namespace TinyBlog.Controllers
 {
+    [Authorize]
     [Route("api/v1/post/")]
     [ApiController]
     public class PostsController : ControllerBase
@@ -19,6 +21,7 @@ namespace TinyBlog.Controllers
             this.postRepository = postRepository;
         }
         // GET: api/Posts
+        [AllowAnonymous]
         [HttpGet]
         [Route("~/api/v1/posts")]
         public IEnumerable<Post> Get()
@@ -27,6 +30,7 @@ namespace TinyBlog.Controllers
         }
 
         // GET: api/Posts/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public Post Get(int id)
         {
@@ -55,7 +59,7 @@ namespace TinyBlog.Controllers
         }
 
         [HttpGet("{post_Id}/comments")]
-        public IEnumerable<Comment> comments(int post_Id)
+        public IEnumerable<Comment> comments(uint post_Id)
         {
             return postRepository.getComments(post_Id);
         }
@@ -70,7 +74,6 @@ namespace TinyBlog.Controllers
         {
             return postRepository.CreateComment(commentContent);
         }
-
         [HttpPut("{post_Id}/comment/{id}")]
         public Comment Update(int post_Id,uint id, [FromBody] string commentContent)
         {

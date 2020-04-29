@@ -13,14 +13,14 @@ using TinyBlog.Services.Interfaces;
 namespace TinyBlog.Controllers
 {
     
-    //[Authorize]
+    [Authorize]
     [Route("api/v1/")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         IUserRepository userRepository;
-        IUserService _userService;
-        public UsersController(IUserRepository userRepository,IUserService userService)
+        IAuthenticationService _userService;
+        public UsersController(IUserRepository userRepository,IAuthenticationService userService)
         {
             this.userRepository = userRepository;
             this._userService = userService;
@@ -47,6 +47,7 @@ namespace TinyBlog.Controllers
         }
 
         // POST: api/User
+        [AllowAnonymous]
         [Route("user")]
         [HttpPost]
         public IActionResult Post([FromBody] User user)
@@ -74,9 +75,9 @@ namespace TinyBlog.Controllers
         }
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] User userParam)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _userService.Authenticate(userParam.Email, userParam.Password);
+            var user = await _userService.Authenticate(request.Email, request.Password);
             if(user == null)
             {
                 return BadRequest(new { message = "email or password is incorrect" });

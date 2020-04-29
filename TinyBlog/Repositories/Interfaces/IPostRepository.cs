@@ -15,7 +15,7 @@ namespace TinyBlog.Repositories.Interfaces
         bool UpdateInformation(int id, string PostContent);
         bool DeletePost(int Id);
         bool CreatePost(Post post);
-        IEnumerable<Comment> getComments(int postId);
+        IEnumerable<Comment> getComments(uint postId);
         Comment getComment(uint commentId);
         Comment CreateComment(string commentContent);
         Comment UpdateComment(uint Commentid, string commentContent);

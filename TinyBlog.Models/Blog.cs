@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace TinyBlog.Models
@@ -17,6 +18,16 @@ namespace TinyBlog.Models
             this.MetaTag = new Dictionary<string, string>();
             this.Tags = new List<Tag>();
         }
+        private string _removeHTMLTagFromText(string textWithHTMLTags)
+        {
+            string outPut = string.Empty;
+            outPut = Regex.Replace(textWithHTMLTags, "<[^>]*>", string.Empty);
+
+            //get rid of multiple blank lines
+            outPut = Regex.Replace(outPut, @"^\s*$\n", string.Empty, RegexOptions.Multiline);
+
+            return outPut.Trim();
+        }
         public uint BlogKey { get; set; }
         public Guid BlogGuid { get; set; }
         public string Title { get; set; }
@@ -32,6 +43,7 @@ namespace TinyBlog.Models
         public string Url { get; set; }
         public string SortUrl { get; set; }
         public string Content { get; set; }
+        public string Excerpt { get { return Content==null?null: this._removeHTMLTagFromText(Content.Substring(0, 100)+"..."); } }
         public IEnumerable<Tag> Tags { get; set; }
         public bool IsActive { get; set; } = true;
         public List<User> Subscribers { get; set; }

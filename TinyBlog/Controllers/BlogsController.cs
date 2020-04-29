@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TinyBlog.Models;
@@ -10,7 +11,8 @@ using TinyBlog.Repositories.Interfaces;
 
 namespace TinyBlog.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Authorize]
+    [Route("api/v1/blog/")]
     [ApiController]
     public class BlogsController : ControllerBase
     {
@@ -21,13 +23,16 @@ namespace TinyBlog.Controllers
             this.blogRepository = blogRepository;
         }
         // GET: api/Blogs
+        [AllowAnonymous]
         [HttpGet]
+        [Route("~/api/v1/blogs/")]
         public IEnumerable<Blog> Get()
         {
             return blogRepository.GetBlog(0, 1, 5);
         }
 
         // GET: api/Blogs/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public Blog Get(int id)
         {

@@ -17,13 +17,13 @@ namespace TinyBlog.Handlers
 
     public class BasicAuthenticationHandler :  AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly IUserService _userService;
+        private readonly Services.Interfaces.IAuthenticationService _userService;
         public BasicAuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            IUserService userService)
+            Services.Interfaces.IAuthenticationService userService)
             : base(options, logger, encoder, clock)
         {
             _userService = userService;

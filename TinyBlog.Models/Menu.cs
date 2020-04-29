@@ -6,10 +6,12 @@ namespace TinyBlog.Models
 {
     public class Menu
     {
-        public string MenuKey { get; set; }
+        public uint MenuKey { get; set; }
         public Guid MenuGuid { get; set; }
         public string Title { get; set; }
-        public ICollection<MenuItem> MenuItems { get; set; }
+        public string Link { get; set; }
+        public bool IsEnable { get; set; }
+        public ICollection<Menu> MenuItems { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public User CreatedBy { get; set; }

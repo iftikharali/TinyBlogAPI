@@ -12,6 +12,7 @@ namespace TinyBlog.Models
         /// <summary>
         /// contains key as tags and value as comma separated tag value
         /// </summary>
+        public string SubTitle { get; set; }
         public Dictionary<string, string> MetaTag { get; set; }
         public string BrowserTitle { get; set; }
         public User Author { get; set; }
@@ -22,7 +23,7 @@ namespace TinyBlog.Models
         public string Excerpt { get; set; }
         public string Content { get; set; }
         /// <summary>
-        /// This will hold the category key
+        /// This will hold the category
         /// </summary>
         public Category Category { get; set; }
         public bool IsPublished { get; set; } = false;
@@ -37,6 +38,8 @@ namespace TinyBlog.Models
         /// </summary>
         public int Votes { get; set; }
         public List<Tag> Tags { get; set; }
+        public string Previous { get; set; }
+        public string Next { get; set; }
         public DateTime CreatedAt { get; set; }
         public User CreatedBy { get; set; }
         public DateTime UpdatedAt { get; set; }

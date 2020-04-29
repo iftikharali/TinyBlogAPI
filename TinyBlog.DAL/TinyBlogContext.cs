@@ -28,6 +28,11 @@ namespace TinyBlog.DAL
             user.UserKey = id;
             user.UserGuid = Guid.NewGuid();
             user.Name = "Name";
+            user.About = "Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
+            user.ImageUrl = "http://localhost:4200/assets/images/profile.jpg";
+            user.BlogsCount = 23;
+            user.PostsCount = 23423;
+            user.Vote = 23423;
             return user;
         }
 

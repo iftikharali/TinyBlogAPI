@@ -9,6 +9,7 @@ namespace TinyBlog.Models
     {
         public uint CommentKey { get; set; }
         public Guid CommentGuid { get; set; }
+        public Comment ParentComment { get; set; }
         public string Content { get; set; }
         public Post Post { get; set; }
         public DateTime CreatedAt { get; set; }

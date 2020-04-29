@@ -10,17 +10,28 @@ using TinyBlog.Models;
 using Microsoft.AspNetCore.Mvc;
 using TinyBlog.Services;
 using TinyBlog.Services.Interfaces;
+using AutoMapper;
+using Microsoft.Extensions.Options;
+using TinyBlog.Helper;
 
 namespace TinyBlog.UnitTest
 {
    
     public class UsersControllerTest
     {
+        private IMapper mapper;
+        private IOptions<Appsettings> options;
+        public UsersControllerTest(IMapper mapper, IOptions<Appsettings> options)
+        {
+            this.mapper = mapper;
+            this.options = options;
+        }
         [Fact]
         public void GetUserTest()
         {
+
             IUserRepository userRepository = new UserRepository();
-            IUserService userService = new UserService();
+            IAuthenticationService userService = new AuthenticationService(this.mapper,this.options);
             UsersController usersController = new UsersController(userRepository,userService);
             List<User> users = usersController.Get().ToList();
             Assert.NotNull(users);
@@ -29,7 +40,7 @@ namespace TinyBlog.UnitTest
         public void GetUserByIDTest()
         {
             IUserRepository userRepository = new UserRepository();
-            IUserService userService = new UserService();
+            IAuthenticationService userService = new AuthenticationService(this.mapper, this.options);
             UsersController usersController = new UsersController(userRepository,userService);
             var users = usersController.Get(5);
             Assert.NotNull(users);
@@ -38,7 +49,7 @@ namespace TinyBlog.UnitTest
         public void CreateUserTest()
         {
             IUserRepository userRepository = new UserRepository();
-            IUserService userService = new UserService();
+            IAuthenticationService userService = new AuthenticationService(this.mapper, this.options);
             UsersController usersController = new UsersController(userRepository,userService);
             User user = new User();
             user.Name = "FirstUser";
@@ -52,7 +63,7 @@ namespace TinyBlog.UnitTest
         public void CreateUserWithInvalidDataTest()
         {
             IUserRepository userRepository = new UserRepository();
-            IUserService userService = new UserService();
+            IAuthenticationService userService = new AuthenticationService(this.mapper, this.options);
             UsersController usersController = new UsersController(userRepository,userService);
             User invalidUser = new User();
             invalidUser.Name = "FirstUser";

@@ -17,6 +17,12 @@ using Microsoft.AspNetCore.Authentication;
 using TinyBlog.Handlers;
 using TinyBlog.Services.Interfaces;
 using TinyBlog.Services;
+using System.Text.Json;
+using AutoMapper;
+using TinyBlog.Helper;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TinyBlog
 {
@@ -33,12 +39,43 @@ namespace TinyBlog
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(option=>
+                {
+                    option.JsonSerializerOptions.PropertyNamingPolicy = null;
+                });
+
+            // configure strongly typed settings objects
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<Appsettings>(appSettingsSection);
+
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<Appsettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
             //services.AddRazorPages();
             //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            // configure basic authentication 
-            services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+            //services.AddAuthentication
+            //// configure basic authentication 
+            //services.AddAuthentication("BasicAuthentication")
+            //    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
 
             services.AddSwaggerGen(c =>
             {
@@ -50,11 +87,15 @@ namespace TinyBlog
                         Description = "A simple and easy blog which anyone love to blog"
                     });
             });
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddSingleton<IBlogRepository, BlogRepository>();
+            services.AddSingleton<IMenuRepository, MenuRepository>();
+            services.AddSingleton<ICategoryRepository, CategoryRepository>();
 
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<Services.Interfaces.IAuthenticationService, Services.AuthenticationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,8 +113,8 @@ namespace TinyBlog
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
