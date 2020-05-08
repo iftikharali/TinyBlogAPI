@@ -23,6 +23,13 @@ using TinyBlog.Helper;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using TinyBlog.Models;
+using System.IdentityModel.Tokens.Jwt;
+using TinyBlog.DAL.Helpers.Interfaces;
+using TinyBlog.DAL.Helpers;
+using TinyBlog.DAL.Interfaces;
+using TinyBlog.DAL;
 
 namespace TinyBlog
 {
@@ -48,7 +55,10 @@ namespace TinyBlog
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<Appsettings>(appSettingsSection);
-
+            services.AddIdentity<User, IdentityRole>(options =>
+            {
+                options.ClaimsIdentity.UserIdClaimType = JwtRegisteredClaimNames.Sub;
+            });
             // configure jwt authentication
             var appSettings = appSettingsSection.Get<Appsettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
@@ -89,11 +99,14 @@ namespace TinyBlog
             });
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IDALHelper>(helper => new DALHelper(@"Data Source=A2ML32669\SQLEXPRESS;Initial Catalog=TinyBlog;Integrated Security=True;MultipleActiveResultSets=True"));
             services.AddSingleton<IPostRepository, PostRepository>();
             services.AddSingleton<IBlogRepository, BlogRepository>();
             services.AddSingleton<IMenuRepository, MenuRepository>();
             services.AddSingleton<ICategoryRepository, CategoryRepository>();
+            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<ITinyBlogContext, TinyBlogContext>();
+            services.AddSingleton<IUserService, UserService>();
 
             services.AddScoped<Services.Interfaces.IAuthenticationService, Services.AuthenticationService>();
         }

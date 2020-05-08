@@ -6,9 +6,14 @@ using TinyBlog.Models;
 
 namespace TinyBlog.Services.Interfaces
 {
-    public interface IAuthenticationService
+    public interface IUserService
     {
-        Task<AuthenticatedUser> Authenticate(string username, string password);
-        Task<IEnumerable<User>> GetAll();
+        Task<User> GetLoggedInUser(uint userKey);
+        Task<User> GetUser(uint userKey);
+        Task<IEnumerable<User>> GetUsers();
+        Task<User> CreateUser(ApplicationContext context, User user);
+        Task<User> UpdateUser(User user);
+        void UpdateUserName(string name);
+        void DeleteUser(uint id);
     }
 }

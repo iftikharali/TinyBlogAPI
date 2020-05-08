@@ -4,14 +4,12 @@ using System.Text;
 
 namespace TinyBlog.Models
 {
-    public class Category
+    public class MetaTag
     {
-        public uint CategoryKey { get; set; }
-        public Guid CategoryGuid { get; set; }
-        public string Name { get; set; }
+        public string MetaTagKey { get; set; }
+        public string Key { get; set; }
         public string Description { get; set; }
-        public uint PostCount { get; set; }
-        public string Link { get; set; }
+        public string Type { get; set; }
         public DateTime CreatedAt { get; set; }
         public User CreatedBy { get; set; }
         public DateTime UpdatedAt { get; set; }

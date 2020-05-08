@@ -16,7 +16,8 @@ namespace TinyBlog.Repositories
                 Category category = new Category()
                 {
                     Name = "Category " + i,
-                    CategoryKey = 123 + i
+                    CategoryKey = 123 + i,
+                    Link = "category/123"+i+"/category-"+i
                 };
                 categories.Add(category);
             }

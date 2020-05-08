@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TinyBlog.Extensions;
 using TinyBlog.Models;
 using TinyBlog.Repositories;
 using TinyBlog.Repositories.Interfaces;
@@ -18,32 +21,40 @@ namespace TinyBlog.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IUserRepository userRepository;
-        IAuthenticationService _userService;
-        public UsersController(IUserRepository userRepository,IAuthenticationService userService)
+        IUserService userService;
+        IAuthenticationService _authService;
+        public UsersController(IUserService userService,IAuthenticationService authService)
         {
-            this.userRepository = userRepository;
-            this._userService = userService;
+            this.userService = userService;
+            this._authService = authService;
         }
         // GET: api/User
         [Route("~/api/v1/users")]
         [HttpGet]
         //[EnableQuery()]
-        public IEnumerable<User> Get()
+        public async Task<IEnumerable<User>> GetAsync()
         {
-            return userRepository.GetUsers();
+            return await userService.GetUsers();
         }
 
         // GET: api/User/5
+        [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public User Get(int id)
+        public async Task<User> Get(uint id)
         {
-            User user = new User();
-            user.UserKey = 234234;
-            user.Password = "asdf";
-            user.Email = "asdomerkg";
-            return user;
-            //return userRepository.GetUser(id);
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            string UserKey = identity.Claims.ToList()?.FirstOrDefault()?.Value;
+            if(Convert.ToInt32(UserKey) == id)
+            {
+                //logged in user
+                return await userService.GetLoggedInUser(id).ConfigureAwait(false);
+            }
+            else
+            {
+                //other user
+                return await userService.GetUser(id).ConfigureAwait(false);
+            }
+            
         }
 
         // POST: api/User
@@ -52,8 +63,12 @@ namespace TinyBlog.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] User user)
         {
-            if(ModelState.IsValid)
-            return CreatedAtAction(nameof(Get), new { UserKey = user.UserKey }, user);
+            if (ModelState.IsValid)
+            {
+                userService.CreateUser(new ApplicationContext(this.GetIdentityKey()), user);
+                return CreatedAtAction(nameof(Get), new { UserKey = user.UserKey }, user);
+            }
+            
             else
             {
                 return BadRequest(ModelState);
@@ -64,20 +79,20 @@ namespace TinyBlog.Controllers
         [HttpPut("user/{id}")]
         public void Put(uint id, [FromBody] string name)
         {
-            userRepository.UpdateUserName(name);
+            userService.UpdateUserName(name);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("user/{id}")]
         public void Delete(uint id)
         {
-            userRepository.DeleteUser(id);
+            userService.DeleteUser(id);
         }
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _userService.Authenticate(request.Email, request.Password);
+            var user = await _authService.Authenticate(request.Email, request.Password);
             if(user == null)
             {
                 return BadRequest(new { message = "email or password is incorrect" });

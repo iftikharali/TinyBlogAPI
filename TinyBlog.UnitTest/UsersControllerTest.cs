@@ -33,7 +33,7 @@ namespace TinyBlog.UnitTest
             IUserRepository userRepository = new UserRepository();
             IAuthenticationService userService = new AuthenticationService(this.mapper,this.options);
             UsersController usersController = new UsersController(userRepository,userService);
-            List<User> users = usersController.Get().ToList();
+            List<User> users = usersController.GetAsync().ToList();
             Assert.NotNull(users);
         }
         [Fact]

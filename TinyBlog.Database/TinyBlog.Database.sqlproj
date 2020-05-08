@@ -64,5 +64,14 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\User.sql" />
+    <Build Include="Tables\Blog.sql" />
+    <Build Include="Tables\Category.sql" />
+    <Build Include="Tables\Comment.sql" />
+    <Build Include="Tables\Post.sql" />
+    <Build Include="Tables\Tag.sql" />
+    <Build Include="Tables\MetaTag.sql" />
+    <Build Include="Stored Procedures\UserCreate.sql" />
+    <Build Include="Views\User_View.sql" />
+    <Build Include="User-Defined Table Types\User_View_TVP.sql" />
   </ItemGroup>
 </Project>

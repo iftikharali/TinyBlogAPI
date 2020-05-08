@@ -1,0 +1,28 @@
+﻿CREATE VIEW [dbo].[User_View]
+	AS 
+
+SELECT
+     [UserKey]
+    ,[UserGuid]
+    ,[UserID]
+    ,[Name]
+    ,[DateOfBirth]
+    ,[Email]
+    ,[Password]
+    ,[Phone]
+    ,[Website]
+    ,[About]
+    ,[ImageUrl]
+    ,[ProfileUrl]
+    ,[IsActive]
+    ,[Vote]
+    ,[DateOfJoining]
+    ,[LastActive]
+    ,[BlogCount]
+    ,[PostCount]
+    ,[CreatedAt]
+    ,[CreatedBy]
+    ,[UpdatedAt]
+    ,[UpdatedBy]
+  FROM 
+    [dbo].[User]

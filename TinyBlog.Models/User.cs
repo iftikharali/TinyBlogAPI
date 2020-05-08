@@ -10,7 +10,7 @@ namespace TinyBlog.Models
     {
         public uint UserKey { get; set; }
         public Guid UserGuid { get; set; }
-        public uint UserID { get; set; }
+        public string UserID { get; set; }
         [Required]
         public string Name { get; set; }
         public DateTime DateOfBirth { get; set; }
@@ -23,16 +23,19 @@ namespace TinyBlog.Models
         public string About { get; set; }
         public List<Category> Categories { get; set; }
         public string ImageUrl { get; set; }
+        public string ProfileUrl { get {
+                return "user/" + UserKey + "/" + UserID;
+            } }
         public bool IsActive { get; set; } = true;
         public int Vote { get; set; }
-        public DateTime DateOfJoining { get; set; }
-        public DateTime LastActive { get; set; }
+        public DateTime? DateOfJoining { get; set; }
+        public DateTime? LastActive { get; set; }
         public uint BlogsCount { get; set; }
         public uint PostsCount { get; set; }
         public ICollection<Comment> Comments { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
         public User CreatedBy { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
         public User UpdatedBy { get; set; }
     }
 

@@ -1,77 +1,54 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
-using TinyBlog.Helper;
 using TinyBlog.Models;
-using TinyBlog.Repositories;
 using TinyBlog.Repositories.Interfaces;
 using TinyBlog.Services.Interfaces;
 
-
 namespace TinyBlog.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class UserService : IUserService
     {
         private IUserRepository userRepository;
-        private List<AuthenticatedUser> _users;
-        private IMapper mapper;
-        private readonly Appsettings _appSettings;
-
-        public AuthenticationService(IMapper mapper, IOptions<Appsettings> option) {
-            this.mapper = mapper;
-            this._appSettings = option.Value;
-        }
-        public async Task<AuthenticatedUser> Authenticate(string email, string password)
+        public UserService(IUserRepository userRepository)
         {
-            userRepository = new UserRepository();
-            _users = this.mapper.Map<List<AuthenticatedUser>>(userRepository.GetUsers().ToList());
-            //_users = ;
-
-            var user = await Task.Run(() => _users.SingleOrDefault(x => x.Email == email && x.Password == password));
-
-            AuthenticatedUser authenticatedUser = this.mapper.Map<AuthenticatedUser>(user);
-            // return null if user not found
-            if (authenticatedUser == null)
-                return null;
-
-            // authentication successful so generate jwt token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.UserKey.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-
-            //return user details without password
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            authenticatedUser.Token = tokenHandler.WriteToken(token);
-            authenticatedUser.Password = null;
-            return authenticatedUser;
-
-            
+            this.userRepository = userRepository;
+        }
+        public async Task<User> CreateUser(ApplicationContext context, User user)
+        {
+            return await this.userRepository.CreateUser(context, user);
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public void DeleteUser(uint id)
         {
-            // return users without passwords
-            return await Task.Run(() => _users.Select(x => {
-                x.Password = null;
-                return x;
-            }));
+            throw new NotImplementedException();
+        }
+
+        public async Task<User> GetLoggedInUser(uint userKey)
+        {
+            return await this.userRepository.GetUser(userKey);
+        }
+
+        public async Task<User> GetUser(uint userKey)
+        {
+            //filter all the data which user don't want to show
+            return await this.userRepository.GetUser(userKey);
+        }
+
+        public Task<IEnumerable<User>> GetUsers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> UpdateUser(User user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateUserName(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

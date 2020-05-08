@@ -8,9 +8,9 @@ namespace TinyBlog.Repositories.Interfaces
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetUsers();
-        User GetUser(uint Id);
-        User GetUser(Guid UserId);
+        Task<IEnumerable<User>> GetUsers();
+        Task<User> GetUser(uint Id);
+        Task<User> GetUser(Guid UserId);
         bool UpdateUserName(string Name);
         bool UpdateUserEmail(string Email);
         bool UpdateUserPassword(string Password);
@@ -18,6 +18,7 @@ namespace TinyBlog.Repositories.Interfaces
         bool DeleteUser(User user);
         bool DeleteUser(Guid UserId);
         bool DeleteUser(uint Id);
-        User CreateUser(User user);
+        Task<User> CreateUser(ApplicationContext context, User user);
+        User GetLoggedInUser(uint id);
     }
 }
