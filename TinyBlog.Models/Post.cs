@@ -6,7 +6,7 @@ namespace TinyBlog.Models
 {
     public class Post
     {
-        public uint PostKey { get; set; }
+        public int PostKey { get; set; }
         public Guid PostGuid { get; set; }
         public string Title { get; set; }
         /// <summary>
@@ -16,7 +16,11 @@ namespace TinyBlog.Models
         public Dictionary<string, string> MetaTag { get; set; }
         public string BrowserTitle { get; set; }
         public User Author { get; set; }
-        public string Url { get; set; }
+        public string Url { get
+            {
+                return "post/" + PostKey + "/" + Title.Replace(" ", "_");
+            }
+        }
         public string SortUrl { get; set; }
         public string MainContentImageUrl { get; set; }
         public string MainContentImageSubtitle { get; set; }
@@ -29,10 +33,31 @@ namespace TinyBlog.Models
         public bool IsPublished { get; set; } = false;
         public bool IsActive { get; set; } = true;
         public Blog Blog { get; set; }
+        public int BlogKey { get
+            {
+                if (Blog != null)
+                {
+                    return Blog.BlogKey;
+                }
+                else
+                {
+                    return 0;
+                }
+            } set
+            {
+                if (Blog == null)
+                {
+                    Blog = new Blog()
+                    {
+                        BlogKey = value
+                    };
+                }
+            }
+        }
         /// <summary>
-        /// Views cannot be negative so type is uint.
+        /// Views cannot be negative so type is int.
         /// </summary>
-        public uint Views { get; set; }
+        public int Views { get; set; }
         /// <summary>
         /// Votes can be go in negative so type is int.
         /// </summary>

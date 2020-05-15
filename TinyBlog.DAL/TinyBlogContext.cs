@@ -34,7 +34,7 @@ namespace TinyBlog.DAL
             return true;
         }
 
-        public async Task<User> GetUser(uint id)
+        public async Task<User> GetUser(int id)
         {
            
                 User user = new User();
@@ -45,15 +45,15 @@ namespace TinyBlog.DAL
                     {
                         while (reader.Read())
                         {
-                            user.UserKey = (uint)reader.GetInt32("UserKey");
+                            user.UserKey = (int)reader.GetInt32("UserKey");
                             user.UserID = reader.GetString("UserId");
                             user.UserGuid = reader.GetGuid("UserGuid");
                             user.Name = reader.GetString("Name");
                             user.About = reader.GetString("About");// Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
                             user.ImageUrl = reader.GetString("ImageUrl");// "http://localhost:4200/assets/images/profile.jpg";
                             //user.ProfileUrl = reader.GetString("ProfileUrl");// "http://localhost:4200/user/" + user.UserKey + "/" + user.UserID;
-                            user.BlogsCount = (uint)reader.GetInt32("BlogCount");
-                            user.PostsCount = (uint)reader.GetInt32("PostCount");// 23423;
+                            user.BlogsCount = (int)reader.GetInt32("BlogCount");
+                            user.PostsCount = (int)reader.GetInt32("PostCount");// 23423;
                             user.Vote = reader.GetInt32("Vote");
                             user.Email = reader.GetString("Email");// "email1@test.com";
                             user.Website = reader.GetString("Website");// "https://www.testing.com";
@@ -94,7 +94,7 @@ namespace TinyBlog.DAL
             
         }
 
-        public User GetLoggedInUser(uint id)
+        public User GetLoggedInUser(int id)
         {
             User user = new User();
             user.UserKey = id;
@@ -142,7 +142,7 @@ namespace TinyBlog.DAL
         {
             User newUser = new User();
             Random r = new Random();
-            newUser.UserKey = (uint)r.Next();
+            newUser.UserKey = (int)r.Next();
             newUser.UserGuid = Guid.NewGuid();
             newUser.Name = "Name";
             return newUser;
@@ -173,7 +173,7 @@ namespace TinyBlog.DAL
             return users;
         }
 
-        public bool DeleteUser(uint UserKey)
+        public bool DeleteUser(int UserKey)
         {
             return true;
         }

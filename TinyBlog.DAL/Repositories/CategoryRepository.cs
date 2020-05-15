@@ -12,7 +12,7 @@ namespace TinyBlog.Repositories
         public IEnumerable<Category> GetCategories()
         {
             List<Category> categories = new List<Category>();
-            for (uint i = 1; i < 11; i++){
+            for (int i = 1; i < 11; i++){
                 Category category = new Category()
                 {
                     Name = "Category " + i,

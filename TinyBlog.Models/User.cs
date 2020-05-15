@@ -8,7 +8,7 @@ namespace TinyBlog.Models
 {
     public class User
     {
-        public uint UserKey { get; set; }
+        public int UserKey { get; set; }
         public Guid UserGuid { get; set; }
         public string UserID { get; set; }
         [Required]
@@ -30,8 +30,8 @@ namespace TinyBlog.Models
         public int Vote { get; set; }
         public DateTime? DateOfJoining { get; set; }
         public DateTime? LastActive { get; set; }
-        public uint BlogsCount { get; set; }
-        public uint PostsCount { get; set; }
+        public int BlogsCount { get; set; }
+        public int PostsCount { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public DateTime? CreatedAt { get; set; }
         public User CreatedBy { get; set; }

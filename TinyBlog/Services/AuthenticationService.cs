@@ -31,7 +31,7 @@ namespace TinyBlog.Services
         }
         public async Task<AuthenticatedUser> Authenticate(string email, string password)
         {
-            var userList = await userRepository.GetUsers().ConfigureAwait(false);
+            var userList = await userRepository.GetUsers(new ApplicationContext(0, _appSettings.BaseUrl)).ConfigureAwait(false);
             _users = this.mapper.Map<List<AuthenticatedUser>>(userList.ToList());
             //_users = ;
 
@@ -43,7 +43,7 @@ namespace TinyBlog.Services
             }
             else
             {
-                _user = await userRepository.GetUser(user.UserKey);
+                _user = await userRepository.GetUser(user.UserKey,new ApplicationContext(0, _appSettings.BaseUrl));
 
             }
 

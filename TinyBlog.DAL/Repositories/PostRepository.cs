@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using TinyBlog.DAL.Helpers.Interfaces;
 using TinyBlog.Models;
 using TinyBlog.Repositories.Interfaces;
 
@@ -9,37 +13,68 @@ namespace TinyBlog.Repositories
 {
     public class PostRepository : IPostRepository
     {
-        public Comment CreateComment(string commentContent)
+        private IDALHelper helper;
+        public PostRepository(IDALHelper helper)
+        {
+            this.helper = helper;
+        }
+        public Comment CreateComment(ApplicationContext context, string commentContent)
         {
             Comment comment = new Comment();
             comment.Content = commentContent;
             return comment;
         }
 
-        public bool CreatePost(Post post)
+        public async Task<Post> CreatePost(ApplicationContext context, Post post)
+        {
+            SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[Post]
+                                                    (BlogKey,PostGuid,Title,SubTitle,MainContentImageUrl,MainContentImageSubtitle,BrowserTitle,AuthorKey,Url,SortUrl,Content,CreatedBy,UpdatedBy) 
+                                                  values(@BlogKey,@PostGuid,@Title,@SubTitle,@MainContentImageUrl,@MainContentImageSubtitle,@BrowserTitle,@AuthorKey,@Url,@SortUrl,@Content,@CreatedBy,@UpdatedBy)");
+
+            command.Parameters.AddWithValue("@BlogKey", post.BlogKey);
+            command.Parameters.AddWithValue("@PostGuid", (object)post.PostGuid ?? DBNull.Value);
+            command.Parameters.AddWithValue("@Title", (object)post.Title ?? DBNull.Value);
+            command.Parameters.AddWithValue("@SubTitle", (object)post.SubTitle ?? DBNull.Value);
+            command.Parameters.AddWithValue("@MainContentImageUrl", (object)post.MainContentImageUrl ?? DBNull.Value);
+            command.Parameters.AddWithValue("@MainContentImageSubtitle", (object)post.MainContentImageSubtitle ?? DBNull.Value);
+            command.Parameters.AddWithValue("@BrowserTitle", (object)post.BrowserTitle ?? DBNull.Value);
+            command.Parameters.AddWithValue("@AuthorKey", context.UserKey);
+            command.Parameters.AddWithValue("@Url", (object)post.Url ?? DBNull.Value);
+            command.Parameters.AddWithValue("@SortUrl", (object)post.SortUrl ?? DBNull.Value);
+            command.Parameters.AddWithValue("@Content", (object)post.Content ?? DBNull.Value);
+            command.Parameters.AddWithValue("@CreatedBy", context.UserKey);
+            command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
+            try
+            {
+                int IsQuerySucess = await this.helper.ExecuteNonQueryAsync(command).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                string s = ex.Message;
+                string st = s;
+            }
+            return post;
+        }
+
+        public bool DeleteComment(ApplicationContext context, int id)
         {
             return true;
         }
 
-        public bool DeleteComment(uint id)
+        public bool DeletePost(ApplicationContext context, int Id)
         {
             return true;
         }
 
-        public bool DeletePost(int Id)
-        {
-            return true;
-        }
-
-        public Comment getComment(uint comment_id)
+        public Comment getComment(ApplicationContext context, int comment_id)
         {
             return new Comment();
         }
 
-        public IEnumerable<Comment> getComments(uint post_Id)
+        public IEnumerable<Comment> getComments(ApplicationContext context, int post_Id)
         {
             List<Comment> comments = new List<Comment>();
-            for(uint i =1; i<17; i++)
+            for(int i =1; i<17; i++)
             {
                 comments.Add(new Comment()
                 {
@@ -59,90 +94,98 @@ namespace TinyBlog.Repositories
             return comments;
         }
 
-        public IEnumerable<Post> GetPost(int StartPage, int NumberOfPage, int NumberOfRecordPerPage)
+        public async Task<IEnumerable<Post>> GetPosts(ApplicationContext context, int StartPage, int NumberOfPage, int NumberOfRecordPerPage)
         {
             List<Post> posts = new List<Post>();
-            //{
-            //    new Post()
-            //    {
-            //        Title = "First",
-            //        Url =  "http://localhost:4200/post/320/blog+title+new+url",
-            //        MainContentImageUrl =  "http://localhost:4200/assets/images/blog.jpg",
-            //        Excerpt = "First excerpt",
-            //        Tags = new List<Tag>(){new Tag() },
-            //        Category = new Category() { CategoryKey = 7, Name = "Digital Science" },
-            //        Votes = 14
-
-            //    }
-            //};
-            for (int i = 1; i <= 107; i++)
+            SqlCommand command = this.helper.GetCommand("SELECT PostKey, PostGuid, Title, SubTitle, BrowserTitle, AuthorKey, Url, SortUrl, MainContentImageUrl, MainContentImageSubtitle, Content, CategoryKey, IsPublished, IsActive, IsDeleted, BlogKey, Views, Votes, Previous, Next, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy FROM [dbo].[Post]");
+            using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
             {
-                posts.Add(new Post()
+                if (reader.HasRows)
                 {
-                    Title = "General Post " + i,
-                    SubTitle = "Subtitle of the page and hence",
-                    Url = "http://localhost:4200/post/320/blog+title+new+url",
-                    MainContentImageUrl = "http://localhost:4200/assets/images/blog.jpg",
-                    Excerpt = "Second excerpt " + i,
-                    Tags = new List<Tag>() { new Tag() },
-                    Category = new Category() { CategoryKey = (uint)(8+i), Name = "Artificial Intelligence" },
-                    Votes = 149,
-                    CreatedAt = DateTime.Now
-                });
+                    while (reader.Read())
+                    {
+                        Post post = new Post();
+                        post.PostKey = reader.GetInt32("PostKey");
+                        post.BlogKey = reader["BlogKey"] == DBNull.Value ? 0 : (int)reader["BlogKey"]; 
+                        post.Title = reader.GetString("Title");// "Blog Title " + i,
+                        post.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                        post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
+                        post.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                        post.Author = new User()
+                        {
+                            Name = "Awesome blogger user",
+                            About = "Something amazing about this user"
+                        };
+                        post.Votes = reader.GetInt32("Votes");// 8987
+                        posts.Add(post);
+                    }
+                }
             }
             return posts;
         }
 
-        public IEnumerable<Post> GetPost(int UserId, int StartPage, int NumberOfPage, int NumberOfRecordPerPage)
+        public async Task<IEnumerable<Post>> GetPosts(ApplicationContext context, int UserId, int StartPage, int NumberOfPage, int NumberOfRecordPerPage)
         {
-            List<Post> posts = new List<Post>()
-            {
-                new Post()
-            };
 
-            posts.Add(new Post());
+            List<Post> posts = new List<Post>();
+            SqlCommand command = this.helper.GetCommand("SELECT PostKey, PostGuid, Title, SubTitle, BrowserTitle, AuthorKey, Url, SortUrl, MainContentImageUrl, MainContentImageSubtitle, Content, CategoryKey, IsPublished, IsActive, IsDeleted, BlogKey, Views, Votes, Previous, Next, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy FROM [dbo].[Post]");
+            using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        Post post = new Post();
+                        post.PostKey = reader.GetInt32("PostKey");
+                        post.BlogKey = reader["BlogKey"] == DBNull.Value ? 0 : (int)reader["BlogKey"];
+                        //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
+                        post.Title = reader.GetString("Title");// "Blog Title " + i,
+                        post.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                        post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
+                        post.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                        post.Author = new User()
+                        {
+                            Name = "Awesome blogger user",
+                            About = "Something amazing about this user"
+                        };
+                        post.Votes = reader.GetInt32("Votes");// 8987
+                        posts.Add(post);
+                    }
+                }
+            }
             return posts;
         }
 
-        public Post GetPost(int Id)
+        public async Task<Post> GetPost(ApplicationContext context, int Id)
         {
-            return new Post()
+            Post post = new Post();
+            SqlCommand command = this.helper.GetCommand("SELECT PostKey, PostGuid, Title, SubTitle, BrowserTitle, AuthorKey, Url, SortUrl, MainContentImageUrl, MainContentImageSubtitle, Content, CategoryKey, IsPublished, IsActive, IsDeleted, BlogKey, Views, Votes, Previous, Next, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy FROM [dbo].[Post] WHERE PostKey = '" + Id + "'");
+            using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
             {
-                BrowserTitle = "First post TinyBlog",
-                Title = "Blog Titile",
-                SubTitle = "Subtitle of the page and hence",
-                MainContentImageUrl = "http://localhost:4200/assets/images/blog.jpg",
-                MainContentImageSubtitle = "the camera never speaks.",
-                Content = @"<p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. In tempus sem augue, feugiat hendrerit lacus rutrum in. Vivamus faucibus ullamcorper nisi vitae auctor. Donec hendrerit accumsan lectus. Nulla gravida, orci in finibus elementum, felis est convallis neque, nec hendrerit urna odio ut nulla. Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.
-        </p>
-        <p>
-        Vivamus vitae nibh sodales, accumsan mauris egestas, laoreet justo. Pellentesque felis nisi, pellentesque ut pulvinar ultricies, eleifend quis arcu. Suspendisse iaculis odio non orci vulputate pretium at ac lacus. Vestibulum commodo diam eget tortor accumsan, at auctor risus tempor. Phasellus eget metus id nulla vehicula iaculis nec quis risus. Vivamus fringilla lectus turpis, eu viverra arcu sodales ut. Pellentesque et lectus nunc. Quisque efficitur quis erat ut facilisis. Nunc ut imperdiet lorem, ut cursus est. Phasellus tincidunt risus lectus, in mattis est venenatis a.
-        </p>
-        <p>
-        Donec dui risus, finibus non lacus ac, tincidunt hendrerit ex. Nam laoreet erat sit amet laoreet hendrerit. Aliquam purus lorem, commodo ac suscipit non, vehicula vel mi. Phasellus vel tristique elit, ut venenatis urna. Phasellus sagittis sem sit amet metus tempus, a vehicula leo lacinia. Vestibulum interdum nisl in ornare consequat. Suspendisse eleifend lorem eget justo vulputate posuere. Fusce viverra lectus nec finibus blandit. Sed fermentum, nisi sit amet posuere maximus, massa risus pulvinar massa, vel suscipit nisl nulla vel neque. Suspendisse aliquet, nibh sed accumsan imperdiet, mi purus condimentum ipsum, a convallis dui nisl nec sapien.
-        </p>
-        <p>
-        Maecenas auctor felis eget tincidunt euismod. Pellentesque interdum vulputate convallis. Proin placerat eleifend nunc sed placerat. Ut lobortis eu risus blandit mattis. Morbi rutrum facilisis varius. Nam id metus blandit, aliquam quam vitae, bibendum magna. In hac habitasse platea dictumst. Nulla vel felis efficitur, efficitur purus non, gravida orci.
-        </p>
-        <p>
-        Vestibulum finibus dapibus aliquam. Donec aliquet nulla diam, ac tincidunt nulla euismod eu. Aenean tempus neque libero, venenatis pellentesque magna tincidunt a. In vitae euismod neque. Duis venenatis ornare nunc ut accumsan. Integer felis lorem, luctus at elit eget, semper tincidunt dolor. In vulputate non sapien vitae vehicula. Phasellus lorem justo, fermentum eget egestas a, tristique eu ex. Integer neque felis, tincidunt eget ligula vel, pulvinar vehicula orci. Aenean faucibus massa ut ex cursus tempor. Nunc felis quam, commodo sit amet felis sit amet, dignissim mollis dolor. Fusce eget est in nunc vestibulum tempus vulputate ut urna. Sed aliquam semper magna id ullamcorper. Aenean rhoncus ultricies arcu, non faucibus justo porta non. Nullam enim turpis, semper non euismod vitae, bibendum a ex. Mauris gravida velit est, eu egestas nibh aliquet ut.
-        </p>",
-                Author = new User()
+                if (reader.HasRows)
                 {
-                    Name = "New Awesome user",
-                    About = "Awesome user creates Awesome blogs",
-                    ImageUrl = "http://localhost:4200/assets/images/user.jpg",
-                    Categories = new List<Category>() { new Category() { Name = "Amazone Web Developer" } },
-                    Vote = 243
-                },
-                Previous = "http://localhost:4200/post/320/blog%2Btitle%2Bnew%2Burl",
-                Next = "http://localhost:4200/post/320/blog%2Btitle%2Bnew%2Burl",
-                Votes = 345
-            };
+                    while (reader.Read())
+                    {
+                        post.PostKey = reader.GetInt32("PostKey");
+                        post.BlogKey = reader["BlogKey"] == DBNull.Value ? 0 : (int)reader["BlogKey"];
+                        //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
+                        post.Title = reader.GetString("Title");// "Blog Title " + i,
+                        post.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                        post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
+                        post.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                        post.Author = new User()
+                        {
+                            Name = "Awesome blogger user",
+                            About = "Something amazing about this user"
+                        };
+                        post.Votes = reader.GetInt32("Votes");// 8987
+                    }
+                }
+            }
+            return post;
         }
 
-        public Comment UpdateComment(uint id, string commentContent)
+        public Comment UpdateComment(ApplicationContext context, int id, string commentContent)
         {
             Comment comment = new Comment();
             comment.CommentKey = id;
@@ -150,12 +193,12 @@ namespace TinyBlog.Repositories
             return comment;
         }
 
-        public bool UpdateInformation(int Id, string PostContent)
+        public bool UpdateInformation(ApplicationContext context, int Id, string PostContent)
         {
             return true;
         }
 
-        public bool UpdateTitle(int Id, string Title)
+        public bool UpdateTitle(ApplicationContext context, int Id, string Title)
         {
             return true;
         }

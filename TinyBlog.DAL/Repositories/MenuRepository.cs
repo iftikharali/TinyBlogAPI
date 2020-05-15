@@ -9,7 +9,7 @@ namespace TinyBlog.Repositories
 {
     public class MenuRepository : IMenuRepository
     {
-        public Menu GetMenu(uint MenuKey)
+        public Menu GetMenu(int MenuKey)
         {
             return new Menu()
             {

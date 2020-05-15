@@ -7,7 +7,7 @@ namespace TinyBlog.Models
 {
     public class Comment
     {
-        public uint CommentKey { get; set; }
+        public int CommentKey { get; set; }
         public Guid CommentGuid { get; set; }
         public Comment ParentComment { get; set; }
         public string Content { get; set; }

@@ -6,7 +6,7 @@ namespace TinyBlog.Models
 {
     public class Menu
     {
-        public uint MenuKey { get; set; }
+        public int MenuKey { get; set; }
         public Guid MenuGuid { get; set; }
         public string Title { get; set; }
         public string Link { get; set; }

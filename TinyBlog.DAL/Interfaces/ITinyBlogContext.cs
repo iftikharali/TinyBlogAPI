@@ -10,12 +10,12 @@ namespace TinyBlog.DAL.Interfaces
     {
         bool DeleteUser(User user);
         bool DeleteUser(Guid userId);
-        Task<User> GetUser(uint id);
-        User GetLoggedInUser(uint id);
+        Task<User> GetUser(int id);
+        User GetLoggedInUser(int id);
         User CreateUser(User user);
         User GetUser(Guid userGuid);
         IEnumerable<User> GetUsers();
-        bool DeleteUser(uint UserKey);
+        bool DeleteUser(int UserKey);
         bool UpdateUserEmail(string email);
         bool UpdateUserName(string name);
         bool UpdateUserPassword(string password);

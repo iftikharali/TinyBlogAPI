@@ -28,7 +28,7 @@ namespace TinyBlog.Models
 
             return outPut.Trim();
         }
-        public uint BlogKey { get; set; }
+        public int BlogKey { get; set; }
         public Guid BlogGuid { get; set; }
         public string Title { get; set; }
         public string SubTitle { get; set; }
@@ -40,7 +40,10 @@ namespace TinyBlog.Models
         public Dictionary<string,string> MetaTag { get; set; }
         public string BrowserTitle { get; set; }
         public User Owner { get; set; }
-        public string Url { get; set; }
+        public string Url { get {
+                return "blog/" + BlogKey + "/" + Title?.Replace(" ", "_");
+            }
+        }
         public string SortUrl { get; set; }
         public string Content { get; set; }
         public string Excerpt { get { return Content==null?null: this._removeHTMLTagFromText(Content.Substring(0, 100)+"..."); } }

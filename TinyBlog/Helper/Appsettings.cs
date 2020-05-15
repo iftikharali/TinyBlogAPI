@@ -8,5 +8,6 @@ namespace TinyBlog.Helper
     public class Appsettings
     {
         public string Secret { get; set; }
+        public string BaseUrl { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -7,7 +8,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using TinyBlog.Extensions;
+using TinyBlog.Helper;
 using TinyBlog.Models;
 using TinyBlog.Repositories;
 using TinyBlog.Repositories.Interfaces;
@@ -23,10 +26,12 @@ namespace TinyBlog.Controllers
     {
         IUserService userService;
         IAuthenticationService _authService;
-        public UsersController(IUserService userService,IAuthenticationService authService)
+        private readonly Appsettings _appSettings;
+        public UsersController(IUserService userService, IOptions<Appsettings> option, IAuthenticationService authService)
         {
             this.userService = userService;
             this._authService = authService;
+            this._appSettings = option.Value;
         }
         // GET: api/User
         [Route("~/api/v1/users")]
@@ -34,25 +39,25 @@ namespace TinyBlog.Controllers
         //[EnableQuery()]
         public async Task<IEnumerable<User>> GetAsync()
         {
-            return await userService.GetUsers();
+            return await userService.GetUsers(new ApplicationContext(this.GetIdentityKey(),_appSettings.BaseUrl));
         }
 
         // GET: api/User/5
         [AllowAnonymous]
         [HttpGet("user/{id}")]
-        public async Task<User> Get(uint id)
+        public async Task<User> Get(int id)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
             string UserKey = identity.Claims.ToList()?.FirstOrDefault()?.Value;
             if(Convert.ToInt32(UserKey) == id)
             {
                 //logged in user
-                return await userService.GetLoggedInUser(id).ConfigureAwait(false);
+                return await userService.GetLoggedInUser(id, new ApplicationContext(this.GetIdentityKey(),_appSettings.BaseUrl)).ConfigureAwait(false);
             }
             else
             {
                 //other user
-                return await userService.GetUser(id).ConfigureAwait(false);
+                return await userService.GetUser(id,new ApplicationContext(this.GetIdentityKey(),_appSettings.BaseUrl)).ConfigureAwait(false);
             }
             
         }
@@ -76,15 +81,31 @@ namespace TinyBlog.Controllers
         }
 
         // PUT: api/User/5
-        [HttpPut("user/{id}")]
-        public void Put(uint id, [FromBody] string name)
+        [HttpPut("user/{id}"),DisableRequestSizeLimit]
+        public void Put(int id, [FromForm] User user)
         {
-            userService.UpdateUserName(name);
+            user.About = user.About == "null" ? null : user.About;
+            user.Phone = user.Phone == "null" ? null : user.Phone;
+            user.Website = user.Website == "null" ? null : user.Website;
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            string UserKey = identity.Claims.ToList()?.FirstOrDefault()?.Value;
+            if (Request.Form.Files.Count > 0)
+            {
+                var folderName = Path.Combine("Resources", "Users\\" + UserKey + "\\profile");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                string fileName = Utility.SaveProfile(Request.Form.Files[0], folderName);
+                user.ImageUrl = Path.Combine(folderName, fileName);
+            }
+            else
+            {
+                user.ImageUrl = user.ImageUrl.Replace(_appSettings.BaseUrl, "");
+            }
+            userService.UpdateUser(new ApplicationContext(this.GetIdentityKey()), user);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("user/{id}")]
-        public void Delete(uint id)
+        public void Delete(int id)
         {
             userService.DeleteUser(id);
         }

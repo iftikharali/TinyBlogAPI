@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,12 +9,13 @@ namespace TinyBlog.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<User> GetLoggedInUser(uint userKey);
-        Task<User> GetUser(uint userKey);
-        Task<IEnumerable<User>> GetUsers();
+        Task<User> GetLoggedInUser(int userKey,ApplicationContext context);
+        Task<User> GetUser(int userKey, ApplicationContext context);
+        Task<IEnumerable<User>> GetUsers(ApplicationContext context);
         Task<User> CreateUser(ApplicationContext context, User user);
-        Task<User> UpdateUser(User user);
+        Task<User> UpdateUser(ApplicationContext context, User user);
         void UpdateUserName(string name);
-        void DeleteUser(uint id);
+        void DeleteUser(int id);
+        string SaveProfile(IFormFile formFile,string folderName);
     }
 }

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using TinyBlog.Models;
 using TinyBlog.Repositories.Interfaces;
@@ -20,30 +23,68 @@ namespace TinyBlog.Services
             return await this.userRepository.CreateUser(context, user);
         }
 
-        public void DeleteUser(uint id)
+        public void DeleteUser(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<User> GetLoggedInUser(uint userKey)
+        public async Task<User> GetLoggedInUser(int userKey, ApplicationContext context)
         {
-            return await this.userRepository.GetUser(userKey);
+            return await this.userRepository.GetUser(userKey,context);
         }
 
-        public async Task<User> GetUser(uint userKey)
+        public async Task<User> GetUser(int userKey, ApplicationContext context)
         {
             //filter all the data which user don't want to show
-            return await this.userRepository.GetUser(userKey);
+            return await this.userRepository.GetUser(userKey,context);
         }
 
-        public Task<IEnumerable<User>> GetUsers()
+        public async Task<IEnumerable<User>> GetUsers(ApplicationContext context)
         {
-            throw new NotImplementedException();
+            return await this.userRepository.GetUsers(context).ConfigureAwait(false);
         }
 
-        public Task<User> UpdateUser(User user)
+        public string SaveProfile(IFormFile formFile,string folderName)
         {
-            throw new NotImplementedException();
+            Directory.CreateDirectory(folderName);
+            var file = formFile;
+            if (file.Length > 0)
+            {
+                var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                var fullPath = Path.Combine(folderName, fileName);
+                var dbPath = Path.Combine(folderName, fileName);
+                bool IsFileExists = true;
+                int counterToAdd = 1;
+                while (IsFileExists)
+                {
+                    if (File.Exists(fullPath))
+                    {
+                        string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                        string FileExtension = Path.GetExtension(fileName);
+                        fullPath = Path.Combine(folderName, FileNameWithoutExtension + "(" + (counterToAdd++) + ")" + FileExtension);
+
+                    }
+                    else
+                    {
+                        IsFileExists = false;
+                    }
+                }
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    file.CopyTo(stream);
+                }
+
+                return Path.GetFileName(fullPath);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<User> UpdateUser(ApplicationContext context, User user)
+        {
+            return await this.userRepository.UpdateUser(context,user);
         }
 
         public void UpdateUserName(string name)

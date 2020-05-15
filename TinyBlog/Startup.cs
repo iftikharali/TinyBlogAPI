@@ -30,6 +30,10 @@ using TinyBlog.DAL.Helpers.Interfaces;
 using TinyBlog.DAL.Helpers;
 using TinyBlog.DAL.Interfaces;
 using TinyBlog.DAL;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace TinyBlog
 {
@@ -55,6 +59,11 @@ namespace TinyBlog
             // configure strongly typed settings objects
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<Appsettings>(appSettingsSection);
+            services.Configure<FormOptions>(o => {
+                o.ValueLengthLimit = int.MaxValue;
+                o.MultipartBodyLengthLimit = int.MaxValue;
+                o.MemoryBufferThreshold = int.MaxValue;
+            });
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 options.ClaimsIdentity.UserIdClaimType = JwtRegisteredClaimNames.Sub;
@@ -107,6 +116,8 @@ namespace TinyBlog
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<ITinyBlogContext, TinyBlogContext>();
             services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IBlogService, BlogService>();
+            services.AddSingleton<IPostService, PostService>();
 
             services.AddScoped<Services.Interfaces.IAuthenticationService, Services.AuthenticationService>();
         }
@@ -120,7 +131,12 @@ namespace TinyBlog
             }
 
             app.UseRouting();
-            //app.UseStaticFiles();
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                RequestPath = new PathString("/Resources")
+            });
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()

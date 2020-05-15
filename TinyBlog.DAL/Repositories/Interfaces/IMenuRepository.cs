@@ -8,7 +8,7 @@ namespace TinyBlog.Repositories.Interfaces
 {
     public interface IMenuRepository
     {
-        Menu GetMenu(uint MenuKey);
+        Menu GetMenu(int MenuKey);
         IEnumerable<Menu> GetMenus();
     }
 }
