@@ -223,3 +223,5 @@ project.lock.json
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
+/TinyBlog/Properties/PublishProfiles/TinyBlog20191023032005 - Web Deploy.pubxml
+/TinyBlog/Resources/Users
