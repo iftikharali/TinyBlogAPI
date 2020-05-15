@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Comment]
 (
-	[CommentKey] INT NOT NULL PRIMARY KEY,
+	[CommentKey] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
 	[CommentGuid] UNIQUEIDENTIFIER NOT NULL,
 	[ParentCommentKey] INT NULL,
 	[Content] NVARCHAR(1000) NOT NULL,

@@ -15,10 +15,11 @@ namespace TinyBlog.Services.Interfaces
         bool UpdateInformation(ApplicationContext context, int id, string PostContent);
         bool DeletePost(ApplicationContext context, int Id);
         Task<Post> CreatePost(ApplicationContext context, Post post);
-        Task<IEnumerable<Comment>> getComments(ApplicationContext context, int postId);
-        Task<Comment> getComment(ApplicationContext context, int commentId);
-        Task<Comment> CreateComment(ApplicationContext context, string commentContent);
+        Task<IEnumerable<Comment>> GetComments(ApplicationContext context, int postId);
+        Task<Comment> GetComment(ApplicationContext context, int commentId);
+        Task<Comment> CreateComment(ApplicationContext context, Comment comment);
         Task<Comment> UpdateComment(ApplicationContext context, int Commentid, string commentContent);
         bool DeleteComment(ApplicationContext context, int Commentid);
+        Task<bool> Vote(ApplicationContext applicationContext);
     }
 }

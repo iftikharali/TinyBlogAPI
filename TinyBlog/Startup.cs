@@ -118,6 +118,7 @@ namespace TinyBlog
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<IBlogService, BlogService>();
             services.AddSingleton<IPostService, PostService>();
+            services.AddSingleton<ICategoryService, CategoryService>();
 
             services.AddScoped<Services.Interfaces.IAuthenticationService, Services.AuthenticationService>();
         }

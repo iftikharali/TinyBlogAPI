@@ -18,7 +18,7 @@ namespace TinyBlog.Models
         public User Author { get; set; }
         public string Url { get
             {
-                return "post/" + PostKey + "/" + Title.Replace(" ", "_");
+                return "post/" + PostKey + "/" + Title?.Replace(" ", "_");
             }
         }
         public string SortUrl { get; set; }

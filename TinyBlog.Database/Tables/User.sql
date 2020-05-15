@@ -18,8 +18,8 @@
     [LastActive] DATE NULL, 
     [BlogCount] INT NOT NULL DEFAULT(0),
     [PostCount] INT NOT NULL DEFAULT(0),
-    [CreatedAt] DATE NOT NULL DEFAULT(getdate()), 
+    [CreatedAt] DATETIME NOT NULL DEFAULT(getdate()), 
     [CreatedBy] INT NULL, 
-    [UpdatedAt] DATE NULL, 
+    [UpdatedAt] DATETIME NOT NULL DEFAULT(getdate()),
     [UpdatedBy] INT NULL
 )

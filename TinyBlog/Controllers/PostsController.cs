@@ -85,21 +85,31 @@ namespace TinyBlog.Controllers
             return true;
         }
 
+        [AllowAnonymous]
         [HttpGet("{post_Id}/comments")]
         public async Task<IEnumerable<Comment>> comments(int post_Id)
         {
-            return await postService.getComments(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), post_Id);
+            return await postService.GetComments(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), post_Id);
         }
 
+        [AllowAnonymous]
         [HttpGet("{post_Id}/comment/{comment_id}")]
         public async Task<Comment> comments(int post_Id, int comment_id)
         {
-            return await postService.getComment(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), comment_id);
+            return await postService.GetComment(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), comment_id);
         }
+
         [HttpPost("{post_Id}/comment")]
-        public async Task<Comment> Create(int post_Id, [FromBody] string commentContent)
+        public async Task<Comment> Create(int post_Id, [FromBody] Comment comment)
         {
-            return await postService.CreateComment(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), commentContent);
+            comment.PostKey = post_Id;
+            return await postService.CreateComment(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), comment);
+        }
+
+        [HttpPost("vote/{post_Id}")]
+        public async Task<bool> Vote(int post_Id)
+        {
+            return await postService.Vote(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl));
         }
         [HttpPut("{post_Id}/comment/{id}")]
         public async Task<Comment> Update(int post_Id,int id, [FromBody] string commentContent)

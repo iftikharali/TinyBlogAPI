@@ -73,5 +73,6 @@
     <Build Include="Stored Procedures\UserCreate.sql" />
     <Build Include="Views\User_View.sql" />
     <Build Include="User-Defined Table Types\User_View_TVP.sql" />
+    <Build Include="Tables\Vote.sql" />
   </ItemGroup>
 </Project>

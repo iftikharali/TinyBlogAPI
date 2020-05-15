@@ -15,9 +15,10 @@ namespace TinyBlog.Services
         {
             this.postRepository = postRepository;
         }
-        public Task<Comment> CreateComment(ApplicationContext context, string commentContent)
+        public async Task<Comment> CreateComment(ApplicationContext context, Comment comment)
         {
-            throw new NotImplementedException();
+            comment.CommentGuid = Guid.NewGuid();
+            return await this.postRepository.CreateComment(context, comment);
         }
 
         public async Task<Post> CreatePost(ApplicationContext context, Post post)
@@ -38,14 +39,14 @@ namespace TinyBlog.Services
             throw new NotImplementedException();
         }
 
-        public Task<Comment> getComment(ApplicationContext context, int commentId)
+        public Task<Comment> GetComment(ApplicationContext context, int commentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Comment>> getComments(ApplicationContext context, int postId)
+        public async Task<IEnumerable<Comment>> GetComments(ApplicationContext context, int postId)
         {
-            throw new NotImplementedException();
+            return await this.postRepository.GetComments(context, postId);
         }
 
         public async Task<IEnumerable<Post>> GetPosts(ApplicationContext context, int StartPage, int NumberOfPage, int NumberOfRecordPerPage)
@@ -76,6 +77,11 @@ namespace TinyBlog.Services
         public bool UpdateTitle(ApplicationContext context, int Id, string Title)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> Vote(ApplicationContext context)
+        {
+            return await this.postRepository.Vote(context)
         }
     }
 }

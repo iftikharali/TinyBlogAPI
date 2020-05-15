@@ -21,29 +21,31 @@ namespace TinyBlog.Repositories
 
         public async Task<Blog> CreateBlog(ApplicationContext context, Blog blog)
         {
-            SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[Blog]
+            using (SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[Blog]
                                                     (BlogGuid,Title,SubTitle,MainContentImageUrl,MainContentImageSubtitle,BrowserTitle,OwnerKey,Url,SortUrl,Content,CreatedBy,UpdatedBy) 
-                                                  values(@BlogGuid,@Title,@SubTitle,@MainContentImageUrl,@MainContentImageSubtitle,@BrowserTitle,@OwnerKey,@Url,@SortUrl,@Content,@CreatedBy,@UpdatedBy)");
-            command.Parameters.AddWithValue("@BlogGuid", (object)blog.BlogGuid ?? DBNull.Value);
-            command.Parameters.AddWithValue("@Title", (object)blog.Title ?? DBNull.Value);
-            command.Parameters.AddWithValue("@SubTitle", (object)blog.SubTitle ?? DBNull.Value);
-            command.Parameters.AddWithValue("@MainContentImageUrl", (object)blog.MainContentImageUrl ?? DBNull.Value);
-            command.Parameters.AddWithValue("@MainContentImageSubtitle", (object)blog.MainContentImageSubtitle ?? DBNull.Value);
-            command.Parameters.AddWithValue("@BrowserTitle", (object)blog.BrowserTitle ?? DBNull.Value);
-            command.Parameters.AddWithValue("@OwnerKey", context.UserKey);
-            command.Parameters.AddWithValue("@Url", (object)blog.Url ?? DBNull.Value);
-            command.Parameters.AddWithValue("@SortUrl", (object)blog.SortUrl ?? DBNull.Value);
-            command.Parameters.AddWithValue("@Content", (object)blog.Content ?? DBNull.Value);
-            command.Parameters.AddWithValue("@CreatedBy", context.UserKey);
-            command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
-            try
+                                                  values(@BlogGuid,@Title,@SubTitle,@MainContentImageUrl,@MainContentImageSubtitle,@BrowserTitle,@OwnerKey,@Url,@SortUrl,@Content,@CreatedBy,@UpdatedBy)"))
             {
-                int IsQuerySucess = await this.helper.ExecuteNonQueryAsync(command).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                string s = ex.Message;
-                string st = s;
+                command.Parameters.AddWithValue("@BlogGuid", (object)blog.BlogGuid ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Title", (object)blog.Title ?? DBNull.Value);
+                command.Parameters.AddWithValue("@SubTitle", (object)blog.SubTitle ?? DBNull.Value);
+                command.Parameters.AddWithValue("@MainContentImageUrl", (object)blog.MainContentImageUrl ?? DBNull.Value);
+                command.Parameters.AddWithValue("@MainContentImageSubtitle", (object)blog.MainContentImageSubtitle ?? DBNull.Value);
+                command.Parameters.AddWithValue("@BrowserTitle", (object)blog.BrowserTitle ?? DBNull.Value);
+                command.Parameters.AddWithValue("@OwnerKey", context.UserKey);
+                command.Parameters.AddWithValue("@Url", (object)blog.Url ?? DBNull.Value);
+                command.Parameters.AddWithValue("@SortUrl", (object)blog.SortUrl ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Content", (object)blog.Content ?? DBNull.Value);
+                command.Parameters.AddWithValue("@CreatedBy", context.UserKey);
+                command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
+                try
+                {
+                    int IsQuerySucess = await this.helper.ExecuteNonQueryAsync(command).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    string s = ex.Message;
+                    string st = s;
+                }
             }
             return blog;
         }
@@ -57,27 +59,29 @@ namespace TinyBlog.Repositories
         {
             List<Blog> blogs = new List<Blog>();
 
-            SqlCommand command = this.helper.GetCommand("select [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] from[dbo].[Blog]");
-            using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
+            using (SqlCommand command = this.helper.GetCommand("select [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] from[dbo].[Blog]"))
             {
-                if (reader.HasRows)
+                using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
-                    while (reader.Read())
+                    if (reader.HasRows)
                     {
-                        Blog blog = new Blog();
-                        blog.BlogKey = reader.GetInt32("BlogKey");
-                        //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
-                        blog.Title = reader.GetString("Title");// "Blog Title " + i,
-                        blog.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
-                        blog.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
-                        blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
-                        blog.Owner = new User()
+                        while (reader.Read())
                         {
-                            Name = "Awesome blogger user",
-                            About = "Something amazing about this user"
-                        };
-                        blog.Votes = reader.GetInt32("Votes");// 8987
-                        blogs.Add(blog);
+                            Blog blog = new Blog();
+                            blog.BlogKey = reader.GetInt32("BlogKey");
+                            //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
+                            blog.Title = reader.GetString("Title");// "Blog Title " + i,
+                            blog.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                            blog.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
+                            blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                            blog.Owner = new User()
+                            {
+                                Name = "Awesome blogger user",
+                                About = "Something amazing about this user"
+                            };
+                            blog.Votes = reader.GetInt32("Votes");// 8987
+                            blogs.Add(blog);
+                        }
                     }
                 }
             }
@@ -89,27 +93,29 @@ namespace TinyBlog.Repositories
         {
             List<Blog> blogs = new List<Blog>();
 
-            SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog]");
-            using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
+            using (SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog]"))
             {
-                if (reader.HasRows)
+                using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
-                    while (reader.Read())
+                    if (reader.HasRows)
                     {
-                        Blog blog = new Blog();
-                        blog.BlogKey = reader.GetInt32("BlogKey");
-                        //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
-                        blog.Title = reader.GetString("Title");// "Blog Title " + i,
-                        blog.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
-                        blog.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
-                        blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
-                        blog.Owner = new User()
+                        while (reader.Read())
                         {
-                            Name = "Awesome blogger user",
-                            About = "Something amazing about this user"
-                        };
-                        blog.Votes = reader.GetInt32("Votes");// 8987
-                        blogs.Add(blog);
+                            Blog blog = new Blog();
+                            blog.BlogKey = reader.GetInt32("BlogKey");
+                            //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
+                            blog.Title = reader.GetString("Title");// "Blog Title " + i,
+                            blog.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                            blog.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
+                            blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                            blog.Owner = new User()
+                            {
+                                Name = "Awesome blogger user",
+                                About = "Something amazing about this user"
+                            };
+                            blog.Votes = reader.GetInt32("Votes");// 8987
+                            blogs.Add(blog);
+                        }
                     }
                 }
             }
@@ -120,25 +126,27 @@ namespace TinyBlog.Repositories
         public async Task<Blog> GetBlog(ApplicationContext context,int Id)
         {
             Blog blog = new Blog();
-            SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog] WHERE BlogKey = '" + Id + "'");
-            using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
+            using (SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog] WHERE BlogKey = '" + Id + "'"))
             {
-                if (reader.HasRows)
+                using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
-                    while (reader.Read())
+                    if (reader.HasRows)
                     {
-                        blog.BlogKey = reader.GetInt32("BlogKey");
-                        //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
-                        blog.Title = reader.GetString("Title");// "Blog Title " + i,
-                        blog.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
-                        blog.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
-                        blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
-                        blog.Owner = new User()
+                        while (reader.Read())
                         {
-                            Name = "Awesome blogger user",
-                            About = "Something amazing about this user"
-                        };
-                        blog.Votes = reader.GetInt32("Votes");// 8987
+                            blog.BlogKey = reader.GetInt32("BlogKey");
+                            //blog.Url = reader.GetString("Url");// "http://localhost:4200/blog/987979/the%2Bfirst%2Bpart%2Bis%2Bthe%2Basdf",
+                            blog.Title = reader.GetString("Title");// "Blog Title " + i,
+                            blog.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                            blog.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];// "http://localhost:4200/assets/images/coverimage.jpg",
+                            blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                            blog.Owner = new User()
+                            {
+                                Name = "Awesome blogger user",
+                                About = "Something amazing about this user"
+                            };
+                            blog.Votes = reader.GetInt32("Votes");// 8987
+                        }
                     }
                 }
             }

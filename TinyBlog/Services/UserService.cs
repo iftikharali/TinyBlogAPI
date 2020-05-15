@@ -20,6 +20,7 @@ namespace TinyBlog.Services
         }
         public async Task<User> CreateUser(ApplicationContext context, User user)
         {
+            user.UserGuid = Guid.NewGuid();
             return await this.userRepository.CreateUser(context, user);
         }
 
