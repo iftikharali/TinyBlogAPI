@@ -34,6 +34,7 @@ namespace TinyBlog.Controllers
             this._appSettings = option.Value;
         }
         // GET: api/User
+        [AllowAnonymous]
         [Route("~/api/v1/users")]
         [HttpGet]
         //[EnableQuery()]
@@ -105,9 +106,9 @@ namespace TinyBlog.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("user/{id}")]
-        public void Delete(int id)
+        public async Task<bool> Delete(int id)
         {
-            userService.DeleteUser(id);
+            return await userService.DeleteUser(new ApplicationContext(this.GetIdentityKey()),id);
         }
         [AllowAnonymous]
         [HttpPost("login")]
@@ -116,7 +117,12 @@ namespace TinyBlog.Controllers
             var user = await _authService.Authenticate(request.Email, request.Password);
             if(user == null)
             {
-                return BadRequest(new { message = "email or password is incorrect" });
+                return BadRequest(new {Code=1, message = "email or password is incorrect." });
+            }
+            else if(!user.IsActive)
+            {
+                await this.userService.ActivateUser(new ApplicationContext(this.GetIdentityKey()), user.UserKey);
+                return BadRequest(new {Code=2, message = "This account was temporarily locked and we have successfully unlocked it. Login again to access your account." });
             }
             return Ok(user);
         }

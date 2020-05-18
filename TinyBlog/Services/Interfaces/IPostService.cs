@@ -20,6 +20,7 @@ namespace TinyBlog.Services.Interfaces
         Task<Comment> CreateComment(ApplicationContext context, Comment comment);
         Task<Comment> UpdateComment(ApplicationContext context, int Commentid, string commentContent);
         bool DeleteComment(ApplicationContext context, int Commentid);
-        Task<bool> Vote(ApplicationContext applicationContext);
+        Task<bool> Vote(ApplicationContext context, int postId);
+        Task<IEnumerable<Post>> GetPostsByUser(ApplicationContext context, int UserKey);
     }
 }

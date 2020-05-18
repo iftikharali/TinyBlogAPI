@@ -52,8 +52,8 @@ namespace TinyBlog.DAL
                             user.About = reader.GetString("About");// Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
                             user.ImageUrl = reader.GetString("ImageUrl");// "http://localhost:4200/assets/images/profile.jpg";
                             //user.ProfileUrl = reader.GetString("ProfileUrl");// "http://localhost:4200/user/" + user.UserKey + "/" + user.UserID;
-                            user.BlogsCount = (int)reader.GetInt32("BlogCount");
-                            user.PostsCount = (int)reader.GetInt32("PostCount");// 23423;
+                            user.BlogCount = (int)reader.GetInt32("BlogCount");
+                            user.PostCount = (int)reader.GetInt32("PostCount");// 23423;
                             user.Vote = reader.GetInt32("Vote");
                             user.Email = reader.GetString("Email");// "email1@test.com";
                             user.Website = reader.GetString("Website");// "https://www.testing.com";
@@ -104,8 +104,8 @@ namespace TinyBlog.DAL
             user.About = "Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
             user.ImageUrl = "http://localhost:4200/assets/images/profile.jpg";
             //user.ProfileUrl = "http://localhost:4200/user/" + user.UserKey + "/" + user.UserID;
-            user.BlogsCount = 23;
-            user.PostsCount = 23423;
+            user.BlogCount = 23;
+            user.PostCount = 23423;
             user.Vote = 23423;
             user.Email = "email1@test.com";
             user.Website = "https://www.testing.com";

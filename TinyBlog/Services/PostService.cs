@@ -79,9 +79,14 @@ namespace TinyBlog.Services
             throw new NotImplementedException();
         }
 
-        public async Task<bool> Vote(ApplicationContext context)
+        public async Task<bool> Vote(ApplicationContext context, int postId)
         {
-            return await this.postRepository.Vote(context)
+            return await this.postRepository.Vote(context, postId);
+        }
+
+        public async Task<IEnumerable<Post>> GetPostsByUser(ApplicationContext context, int UserKey)
+        {
+            return await this.postRepository.GetPostsByUser(context, UserKey);
         }
     }
 }

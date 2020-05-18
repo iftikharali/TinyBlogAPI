@@ -15,7 +15,8 @@ namespace TinyBlog.Services.Interfaces
         Task<User> CreateUser(ApplicationContext context, User user);
         Task<User> UpdateUser(ApplicationContext context, User user);
         void UpdateUserName(string name);
-        void DeleteUser(int id);
+        Task<bool> DeleteUser(ApplicationContext context, int UserKey);
         string SaveProfile(IFormFile formFile,string folderName);
+        Task<bool> ActivateUser(ApplicationContext context, int UserKey);
     }
 }

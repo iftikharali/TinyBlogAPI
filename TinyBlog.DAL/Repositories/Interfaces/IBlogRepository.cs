@@ -16,5 +16,7 @@ namespace TinyBlog.Repositories.Interfaces
         bool UpdateInformation(int Id, string BlogContent);
         bool DeleteBlog(int Id);
         Task<Blog> CreateBlog(ApplicationContext context, Blog blog);
+        Task<bool> Subscribe(ApplicationContext context, int blogKey);
+        Task<bool> Recommend(ApplicationContext context, int blogKey);
     }
 }

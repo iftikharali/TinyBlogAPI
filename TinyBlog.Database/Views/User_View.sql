@@ -1,6 +1,5 @@
 ﻿CREATE VIEW [dbo].[User_View]
 	AS 
-
 SELECT
      [UserKey]
     ,[UserGuid]
@@ -18,11 +17,15 @@ SELECT
     ,[Vote]
     ,[DateOfJoining]
     ,[LastActive]
-    ,[BlogCount]
-    ,[PostCount]
+    ,ISNULL(B.[BlogCount],0) BlogCount
+    ,ISNULL(P.[PostCount],0) PostCount
     ,[CreatedAt]
-    ,[CreatedBy]
+    ,U.[CreatedBy]
     ,[UpdatedAt]
     ,[UpdatedBy]
   FROM 
-    [dbo].[User]
+    [dbo].[User] U
+	LEFT JOIN 
+  (Select count([BlogKey]) BlogCount, MAX(CreatedBy) CreatedBy from [dbo].[Blog] GROUP BY CreatedBy) B ON B.CreatedBy=U.UserKey
+  LEFT JOIN
+  (Select count([PostKey]) PostCount, MAX(CreatedBy) CreatedBy from [dbo].[Post] GROUP BY CreatedBy) P ON P.CreatedBy=U.UserKey

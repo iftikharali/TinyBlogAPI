@@ -59,7 +59,7 @@ namespace TinyBlog.Repositories
         {
             List<Blog> blogs = new List<Blog>();
 
-            using (SqlCommand command = this.helper.GetCommand("select [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] from[dbo].[Blog]"))
+            using (SqlCommand command = this.helper.GetCommand("select [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], OwnerName, OwnerGuid, OwnerAbout, ImageUrl,[Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Recommend],[SubscriberCount], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] from[dbo].[Blog_View]"))
             {
                 using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
@@ -76,10 +76,13 @@ namespace TinyBlog.Repositories
                             blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
                             blog.Owner = new User()
                             {
-                                Name = "Awesome blogger user",
-                                About = "Something amazing about this user"
+                                Name = reader["OwnerName"] == DBNull.Value ? null : (string)reader["OwnerName"],
+                                About = reader["OwnerAbout"] == DBNull.Value ? null : (string)reader["OwnerAbout"],
+                                UserGuid = reader.GetGuid("OwnerGuid"),
+                                ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"]
                             };
-                            blog.Votes = reader.GetInt32("Votes");// 8987
+                            blog.Recommend = reader.GetInt32("Recommend");// 8987
+                            blog.SubscriberCount = reader.GetInt32("SubscriberCount");
                             blogs.Add(blog);
                         }
                     }
@@ -93,7 +96,7 @@ namespace TinyBlog.Repositories
         {
             List<Blog> blogs = new List<Blog>();
 
-            using (SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog]"))
+            using (SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], OwnerName, OwnerGuid, OwnerAbout, ImageUrl,[Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Recommend],[SubscriberCount], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog_View]"))
             {
                 using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
@@ -110,10 +113,13 @@ namespace TinyBlog.Repositories
                             blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
                             blog.Owner = new User()
                             {
-                                Name = "Awesome blogger user",
-                                About = "Something amazing about this user"
+                                Name = reader["OwnerName"] == DBNull.Value ? null : (string)reader["OwnerName"],
+                                About = reader["OwnerAbout"] == DBNull.Value ? null : (string)reader["OwnerAbout"],
+                                UserGuid = reader.GetGuid("OwnerGuid"),
+                                ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"]
                             };
-                            blog.Votes = reader.GetInt32("Votes");// 8987
+                            blog.Recommend = reader.GetInt32("Recommend");// 8987
+                            blog.SubscriberCount = reader.GetInt32("SubscriberCount");
                             blogs.Add(blog);
                         }
                     }
@@ -126,7 +132,7 @@ namespace TinyBlog.Repositories
         public async Task<Blog> GetBlog(ApplicationContext context,int Id)
         {
             Blog blog = new Blog();
-            using (SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], [Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Votes], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog] WHERE BlogKey = '" + Id + "'"))
+            using (SqlCommand command = this.helper.GetCommand("SELECT [BlogKey], [BlogGuid], [Title], [SubTitle], [MainContentImageUrl], [MainContentImageSubtitle], [BrowserTitle], [OwnerKey], OwnerName, OwnerGuid, OwnerAbout, ImageUrl,[Url], [SortUrl], [Content], [IsActive], [IsDeleted], [Recommend],[SubscriberCount], [CreatedAt], [CreatedBy], [UpdatedAt], [UpdatedBy] FROM [dbo].[Blog_View] WHERE BlogKey = '" + Id + "'"))
             {
                 using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
@@ -142,10 +148,13 @@ namespace TinyBlog.Repositories
                             blog.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
                             blog.Owner = new User()
                             {
-                                Name = "Awesome blogger user",
-                                About = "Something amazing about this user"
+                                Name = reader["OwnerName"] == DBNull.Value ? null : (string)reader["OwnerName"],
+                                About = reader["OwnerAbout"] == DBNull.Value ? null : (string)reader["OwnerAbout"],
+                                UserGuid = reader.GetGuid("OwnerGuid"),
+                                ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"]
                             };
-                            blog.Votes = reader.GetInt32("Votes");// 8987
+                            blog.Recommend = reader.GetInt32("Recommend");// 8987
+                            blog.SubscriberCount = reader.GetInt32("SubscriberCount");
                         }
                     }
                 }
@@ -160,6 +169,63 @@ namespace TinyBlog.Repositories
 
         public bool UpdateTitle(string Title)
         {
+            return true;
+        }
+
+        public async Task<bool> Subscribe(ApplicationContext context, int blogKey)
+        {
+            using (SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[Counter]
+                                                    (CounterGuid, EntityKey, EntityType,CounterType, Count, CreatedBy, UpdatedBy) 
+                                                  values(@CounterGuid, @EntityKey, @EntityType, @CounterType, @Count,  @CreatedBy, @UpdatedBy)"))
+            {
+
+
+                command.Parameters.AddWithValue("@CounterGuid", Guid.NewGuid());
+                command.Parameters.AddWithValue("@EntityKey", blogKey);
+                command.Parameters.AddWithValue("@EntityType", "blog");
+                command.Parameters.AddWithValue("@CounterType", "Subscribe");
+                command.Parameters.AddWithValue("@Count", 1);
+                command.Parameters.AddWithValue("@CreatedBy", context.UserKey);
+                command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
+                try
+                {
+                    int IsQuerySucess = await this.helper.ExecuteNonQueryAsync(command).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    string s = ex.Message;
+                    string st = s;
+                    return false;
+                }
+            }
+            return true;
+        }
+        public async Task<bool> Recommend(ApplicationContext context, int blogKey)
+        {
+            using (SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[Counter]
+                                                    (CounterGuid, EntityKey, EntityType,CounterType, Count, CreatedBy, UpdatedBy) 
+                                                  values(@CounterGuid, @EntityKey, @EntityType, @CounterType, @Count,  @CreatedBy, @UpdatedBy)"))
+            {
+
+
+                command.Parameters.AddWithValue("@CounterGuid", Guid.NewGuid());
+                command.Parameters.AddWithValue("@EntityKey", blogKey);
+                command.Parameters.AddWithValue("@EntityType", "blog");
+                command.Parameters.AddWithValue("@CounterType", "Recommend");
+                command.Parameters.AddWithValue("@Count", 1);
+                command.Parameters.AddWithValue("@CreatedBy", context.UserKey);
+                command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
+                try
+                {
+                    int IsQuerySucess = await this.helper.ExecuteNonQueryAsync(command).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    string s = ex.Message;
+                    string st = s;
+                    return false;
+                }
+            }
             return true;
         }
     }

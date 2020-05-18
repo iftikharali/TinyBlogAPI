@@ -21,7 +21,22 @@ namespace TinyBlog.Repositories
         {
             this.helper = helper;
         }
-        
+
+        public async Task<bool> ActivateUser(ApplicationContext context, int UserKey)
+        {
+            using (SqlCommand command = this.helper.GetCommand(@"Update [dbo].[User] Set
+                                                        IsActive=@IsActive,LastActive=@LastActive, UpdatedAt=@UpdatedAt,UpdatedBy=@UpdatedBy  WHERE UserKey=@UserKey"))
+            {
+                command.Parameters.AddWithValue("@IsActive", 1);
+                command.Parameters.AddWithValue("@LastActive", DateTime.Now);
+                command.Parameters.AddWithValue("@UpdatedAt", DateTime.Now);
+                command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
+                command.Parameters.AddWithValue("@UserKey", UserKey);
+                await this.helper.ExecuteNonQueryAsync(command);
+            }
+            return true;
+        }
+
         public async Task<User> CreateUser(ApplicationContext context, User user)
         {
             using (SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[User]
@@ -66,7 +81,7 @@ namespace TinyBlog.Repositories
 
         public bool DeleteUser(User user)
         {
-            return true; ;
+            return true;
         }
 
         public bool DeleteUser(Guid UserId)
@@ -74,9 +89,19 @@ namespace TinyBlog.Repositories
             return true;// _context.DeleteUser(UserId);
         }
 
-        public bool DeleteUser(int Id)
+        public async Task<bool> DeleteUser(ApplicationContext context, int UserKey)
         {
-            return true;// _context.DeleteUser(Id);
+            using (SqlCommand command = this.helper.GetCommand(@"Update [dbo].[User] Set
+                                                        IsActive=@IsActive,LastActive=@LastActive, UpdatedAt=@UpdatedAt,UpdatedBy=@UpdatedBy  WHERE UserKey=@UserKey"))
+            {
+                command.Parameters.AddWithValue("@IsActive", 0);
+                command.Parameters.AddWithValue("@LastActive", DateTime.Now);
+                command.Parameters.AddWithValue("@UpdatedAt", DateTime.Now);
+                command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
+                command.Parameters.AddWithValue("@UserKey", UserKey);
+                await this.helper.ExecuteNonQueryAsync(command);
+            }
+            return true;
         }
 
         public User GetLoggedInUser(int id, ApplicationContext context)
@@ -87,7 +112,7 @@ namespace TinyBlog.Repositories
         public async Task<User> GetUser(int Id, ApplicationContext context)
         {
             User user = new User();
-            using (SqlCommand command = this.helper.GetCommand("select * from [dbo].[User] where UserKey = '" + Id + "'"))
+            using (SqlCommand command = this.helper.GetCommand("select * from [dbo].[User_View] where UserKey = '" + Id + "'"))
             {
                 using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
                 {
@@ -102,9 +127,9 @@ namespace TinyBlog.Repositories
                             user.Password = reader.GetString("Password");
                             user.About = reader["About"] == DBNull.Value ? null : (string)reader["About"];// Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
                             user.ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"];// "http://localhost:4200/assets/images/profile.jpg";
-                                                                                                                                     //user.ProfileUrl = reader["ProfileUrl"] == DBNull.Value ? null : (string)reader["ProfileUrl"];// "http://localhost:4200/user/" + user.UserKey + "/" + user.UserID;
-                            user.BlogsCount = (int)reader.GetInt32("BlogCount");
-                            user.PostsCount = (int)reader.GetInt32("PostCount");// 23423;
+                            user.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                            user.BlogCount = (int)reader.GetInt32("BlogCount");
+                            user.PostCount = (int)reader.GetInt32("PostCount");// 23423;
                             user.Vote = reader.GetInt32("Vote");
                             user.Email = reader.GetString("Email");// "email1@test.com";
                             user.Website = reader["Website"] == DBNull.Value ? null : (string)reader["Website"];// "https://www.testing.com";
@@ -136,9 +161,9 @@ namespace TinyBlog.Repositories
                             user.Password = reader.GetString("Password");
                             user.About = reader["About"] == DBNull.Value ? null : (string)reader["About"];// Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
                             user.ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"];// "http://localhost:4200/assets/images/profile.jpg";
-                                                                                                                                     //user.ProfileUrl = reader["ProfileUrl"] == DBNull.Value ? null : (string)reader["ProfileUrl"];// "http://localhost:4200/user/" + user.UserKey + "/" + user.UserID;
-                            user.BlogsCount = (int)reader.GetInt32("BlogCount");
-                            user.PostsCount = (int)reader.GetInt32("PostCount");// 23423;
+                            user.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                            user.BlogCount = (int)reader.GetInt32("BlogCount");
+                            user.PostCount = (int)reader.GetInt32("PostCount");// 23423;
                             user.Vote = reader.GetInt32("Vote");
                             user.Email = reader.GetString("Email");// "email1@test.com";
                             user.Website = reader["Website"] == DBNull.Value ? null : (string)reader["Website"];// "https://www.testing.com";
@@ -170,9 +195,9 @@ namespace TinyBlog.Repositories
                             user.Name = reader.GetString("Name");
                             user.About = reader["About"] == DBNull.Value ? null : (string)reader["About"];// Fusce augue nunc, ornare in risus at, porttitor molestie lectus. Aliquam a fermentum nulla. Sed molestie tristique leo eget lobortis. Pellentesque molestie pulvinar massa laoreet tristique. Cras convallis ac ante vitae lacinia. Nunc imperdiet elementum congue. In hac habitasse platea dictumst. Suspendisse iaculis bibendum dolor vitae blandit. Phasellus ac diam placerat, tempor mi ut, luctus dolor. Nulla facilisi.";
                             user.ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"];// "http://localhost:4200/assets/images/profile.jpg";
-                                                                                                                                     //user.ProfileUrl = reader["ProfileUrl"] == DBNull.Value ? null : (string)reader["ProfileUrl"];// "http://localhost:4200/user/" + user.UserKey + "/" + user.UserID;
-                            user.BlogsCount = (int)reader.GetInt32("BlogCount");
-                            user.PostsCount = (int)reader.GetInt32("PostCount");// 23423;
+                            user.IsActive = Convert.ToBoolean(reader["IsActive"]);
+                            user.BlogCount = (int)reader.GetInt32("BlogCount");
+                            user.PostCount = (int)reader.GetInt32("PostCount");// 23423;
                             user.Vote = reader.GetInt32("Vote");
                             user.Email = reader.GetString("Email");// "email1@test.com";
                             user.Website = reader["Website"] == DBNull.Value ? null : (string)reader["Website"];// "https://www.testing.com";
@@ -191,7 +216,7 @@ namespace TinyBlog.Repositories
         public async Task<User> UpdateUser(ApplicationContext context, User user)
         {
             using (SqlCommand command = this.helper.GetCommand(@"Update [dbo].[User] Set
-                                                        Phone = @Phone,Website=@Website,About = @About,ImageUrl=@ImageUrl,Name=@Name,Email=@Email WHERE UserKey=@UserId"))
+                                                        Phone = @Phone,Website=@Website,About = @About,ImageUrl=@ImageUrl,Name=@Name,Email=@Email,,LastActive=@LastActive, UpdatedAt=@UpdatedAt,UpdatedBy=@UpdatedBy WHERE UserKey=@UserKey"))
             {
                 user.UserID = user.Email;
                 command.Parameters.AddWithValue("@Phone", (object)user.Phone ?? DBNull.Value);

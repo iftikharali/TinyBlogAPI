@@ -46,6 +46,13 @@ namespace TinyBlog.Controllers
             return await postService.GetPost(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), id);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("~/api/v1/postsbyuser/{UserKey}")]
+        public async Task<IEnumerable<Post>> GetPostByUserAsync(int UserKey)
+        {
+            return await this.postService.GetPostsByUser(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), UserKey);
+        }
         // POST: api/Posts
         [HttpPost,DisableRequestSizeLimit]
         public IActionResult Post([FromForm] Post post)
@@ -109,7 +116,7 @@ namespace TinyBlog.Controllers
         [HttpPost("vote/{post_Id}")]
         public async Task<bool> Vote(int post_Id)
         {
-            return await postService.Vote(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl));
+            return await postService.Vote(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl),post_Id);
         }
         [HttpPut("{post_Id}/comment/{id}")]
         public async Task<Comment> Update(int post_Id,int id, [FromBody] string commentContent)

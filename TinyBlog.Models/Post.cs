@@ -18,7 +18,7 @@ namespace TinyBlog.Models
         public User Author { get; set; }
         public string Url { get
             {
-                return "post/" + PostKey + "/" + Title?.Replace(" ", "_");
+                return "post/" + PostKey + "/" + Title?.Replace(" ", "-");
             }
         }
         public string SortUrl { get; set; }
@@ -26,10 +26,6 @@ namespace TinyBlog.Models
         public string MainContentImageSubtitle { get; set; }
         public string Excerpt { get; set; }
         public string Content { get; set; }
-        /// <summary>
-        /// This will hold the category
-        /// </summary>
-        public Category Category { get; set; }
         public bool IsPublished { get; set; } = false;
         public bool IsActive { get; set; } = true;
         public Blog Blog { get; set; }

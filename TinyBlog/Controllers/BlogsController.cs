@@ -78,6 +78,17 @@ namespace TinyBlog.Controllers
             blogService.UpdateInformation(id,blogContent);
         }
 
+        [HttpPost("subscribe")]
+        public async Task<bool> Subscribe([FromBody] int blogKey)
+        {
+            return await blogService.Subscribe(new ApplicationContext(this.GetIdentityKey()), blogKey);
+        }
+
+        [HttpPost("recommend")]
+        public async Task<bool> Recommend([FromBody] int blogKey)
+        {
+            return await blogService.Recommend(new ApplicationContext(this.GetIdentityKey()), blogKey);
+        }
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public void Delete(int id)

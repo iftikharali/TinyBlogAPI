@@ -17,7 +17,8 @@ namespace TinyBlog.Repositories.Interfaces
         bool UpdateUserPhone(string PhoneNumber);
         bool DeleteUser(User user);
         bool DeleteUser(Guid UserId);
-        bool DeleteUser(int Id);
+        Task<bool> ActivateUser(ApplicationContext context, int userKey);
+        Task<bool> DeleteUser(ApplicationContext context, int UserKey);
         Task<User> CreateUser(ApplicationContext context, User user);
         User GetLoggedInUser(int id, ApplicationContext context);
         Task<User> UpdateUser(ApplicationContext context, User user);

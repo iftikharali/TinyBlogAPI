@@ -17,7 +17,7 @@ namespace TinyBlog.Services
         }
         private string MakeURLReadable(string url)
         {
-            return url.Replace(" ", "_");
+            return url.Replace(" ", "-");
         }
         public async Task<Blog> CreateBlog(ApplicationContext context, Blog blog)
         {
@@ -54,6 +54,16 @@ namespace TinyBlog.Services
         public bool UpdateTitle(string Title)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<bool> Subscribe(ApplicationContext context, int blogKey)
+        {
+            return await this.blogRepository.Subscribe(context, blogKey);
+        }
+
+        public async Task<bool> Recommend(ApplicationContext context, int blogKey)
+        {
+            return await this.blogRepository.Recommend(context, blogKey);
         }
     }
 }

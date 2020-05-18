@@ -18,15 +18,21 @@ namespace TinyBlog.Services
         {
             this.userRepository = userRepository;
         }
+
+        public async Task<bool> ActivateUser(ApplicationContext context, int UserKey)
+        {
+            return await this.userRepository.ActivateUser(context, UserKey);
+        }
+
         public async Task<User> CreateUser(ApplicationContext context, User user)
         {
             user.UserGuid = Guid.NewGuid();
             return await this.userRepository.CreateUser(context, user);
         }
 
-        public void DeleteUser(int id)
+        public async Task<bool> DeleteUser(ApplicationContext context,int UserKey)
         {
-            throw new NotImplementedException();
+            return await this.userRepository.DeleteUser(context, UserKey);
         }
 
         public async Task<User> GetLoggedInUser(int userKey, ApplicationContext context)

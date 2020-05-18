@@ -39,9 +39,37 @@ namespace TinyBlog.Models
         /// </summary>
         public Dictionary<string,string> MetaTag { get; set; }
         public string BrowserTitle { get; set; }
+        /// <summary>
+        /// This will hold the category
+        /// </summary>
+        public Category Category { get; set; }
+        public int CategoryKey
+        {
+            get
+            {
+                if (Category != null)
+                {
+                    return Category.CategoryKey;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            set
+            {
+                if (Category == null)
+                {
+                    Category = new Category()
+                    {
+                        CategoryKey = value
+                    };
+                }
+            }
+        }
         public User Owner { get; set; }
         public string Url { get {
-                return "blog/" + BlogKey + "/" + Title?.Replace(" ", "_");
+                return "blog/" + BlogKey + "/" + Title?.Replace(" ", "-");
             }
         }
         public string SortUrl { get; set; }
@@ -50,11 +78,9 @@ namespace TinyBlog.Models
         public IEnumerable<Tag> Tags { get; set; }
         public bool IsActive { get; set; } = true;
         public List<User> Subscribers { get; set; }
-        public int Votes { get; set; }
-        /// <summary>
-        /// When user Recommend he/she can add users as well whome he specifically want to recommend
-        /// </summary>
-        public List<Recommend> Recommends { get; set; }
+        public int SubscriberCount { get; set; }
+        public int Views { get; set; }
+        public int Recommend { get; set; }
         public DateTime CreatedAt { get; set; }
         public User CreatedBy { get; set; }
         public DateTime UpdatedAt { get; set; }

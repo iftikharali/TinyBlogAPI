@@ -30,8 +30,8 @@ namespace TinyBlog.Models
         public int Vote { get; set; }
         public DateTime? DateOfJoining { get; set; }
         public DateTime? LastActive { get; set; }
-        public int BlogsCount { get; set; }
-        public int PostsCount { get; set; }
+        public int BlogCount { get; set; }
+        public int PostCount { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public DateTime? CreatedAt { get; set; }
         public User CreatedBy { get; set; }

@@ -11,7 +11,6 @@
 	[MainContentImageUrl] NVARCHAR(MAX) NULL,
 	[MainContentImageSubtitle] NVARCHAR(1000) NULL,
 	[Content] NVARCHAR(MAX) NULL,
-	[CategoryKey] INT NULL,
 	[IsPublished] TINYINT NOT NULL DEFAULT(0),
 	[IsActive] TINYINT NOT NULL DEFAULT(1),
 	[IsDeleted] TINYINT NOT NULL DEFAULT(0),
