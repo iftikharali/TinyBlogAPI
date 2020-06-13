@@ -8,7 +8,6 @@
 	[MainContentImageSubtitle]  NVARCHAR(300) NOT NULL,
 	[BrowserTitle]  NVARCHAR(300) NOT NULL,
 	[OwnerKey] INT NOT NULL,
-	[CategoryKey] INT NULL,
 	[Url]  NVARCHAR(MAX) NOT NULL,
 	[SortUrl]  NVARCHAR(300) NOT NULL,
 	[Content]  NVARCHAR(MAX) NOT NULL,

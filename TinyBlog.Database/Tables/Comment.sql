@@ -5,9 +5,9 @@
 	[ParentCommentKey] INT NULL,
 	[Content] NVARCHAR(1000) NOT NULL,
 	[PostKey] INT NOT NULL,
-	[CreatedAt] DATE NOT NULL DEFAULT(getdate()), 
+	[CreatedAt] DATETIME NOT NULL DEFAULT(getdate()), 
     [CreatedBy] INT NOT NULL, 
-    [UpdatedAt] DATE NOT NULL DEFAULT(getdate()), 
+    [UpdatedAt] DATETIME NOT NULL DEFAULT(getdate()), 
     [UpdatedBy] INT NOT NULL, 
     CONSTRAINT [FK_CommentCreatedBy] FOREIGN KEY (CreatedBy) REFERENCES [User]([UserKey]),
     CONSTRAINT [FK_CommentUpdatedBy] FOREIGN KEY (UpdatedBy) REFERENCES [User]([UserKey])

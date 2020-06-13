@@ -47,7 +47,7 @@ namespace TinyBlog.Repositories
                 command.Parameters.AddWithValue("@Phone", (object)user.Phone ?? DBNull.Value);
                 command.Parameters.AddWithValue("@Website", (object)user.Website ?? DBNull.Value);
                 command.Parameters.AddWithValue("@About", (object)user.About ?? DBNull.Value);
-                command.Parameters.AddWithValue("@ImageUrl", (object)user.ImageUrl ?? DBNull.Value);
+                command.Parameters.AddWithValue("@ImageUrl", (object)user.ImageUrl ?? "Resources/Users/default/profile/default.jpg");
                 //command.Parameters.AddWithValue("@ProfileUrl", (object)user.ProfileUrl ?? DBNull.Value);
                 command.Parameters.AddWithValue("@DateOfJoining", DateTime.Now);
                 command.Parameters.AddWithValue("@LastActive", DateTime.Now);

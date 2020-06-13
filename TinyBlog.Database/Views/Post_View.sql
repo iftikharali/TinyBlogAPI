@@ -19,6 +19,7 @@ SELECT P.[PostKey]
       ,ISNULL(V.[Votes],0) as Votes
       ,P.[Previous]
       ,P.[Next]
+      ,P.[CategoryKey]
 
       ,U.UserKey
       ,U.[UserGuid]

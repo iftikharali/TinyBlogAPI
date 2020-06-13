@@ -78,5 +78,6 @@
     <Build Include="Views\Blog_View.sql" />
     <Build Include="Views\Comment_View.sql" />
     <Build Include="Tables\Error.sql" />
+    <Build Include="Tables\RecommendedPost.sql" />
   </ItemGroup>
 </Project>

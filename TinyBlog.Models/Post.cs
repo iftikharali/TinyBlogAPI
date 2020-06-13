@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TinyBlog.Models
 {
@@ -16,9 +17,21 @@ namespace TinyBlog.Models
         public Dictionary<string, string> MetaTag { get; set; }
         public string BrowserTitle { get; set; }
         public User Author { get; set; }
+
+        private string _removeHTMLTagFromText(string textWithHTMLTags)
+        {
+            if (textWithHTMLTags == "" || textWithHTMLTags == null) return "";
+            string outPut = string.Empty;
+            outPut = Regex.Replace(textWithHTMLTags, "<[^>]*>", string.Empty);
+
+            //get rid of multiple blank lines
+            outPut = Regex.Replace(outPut, @"^\s*$\n", string.Empty, RegexOptions.Multiline);
+
+            return outPut.Trim();
+        }
         public string Url { get
             {
-                return "post/" + PostKey + "/" + Title?.Replace(" ", "-");
+                return "post/" + PostKey + "/" + this._removeHTMLTagFromText(Title)?.Replace(" ", "-");
             }
         }
         public string SortUrl { get; set; }
@@ -28,6 +41,34 @@ namespace TinyBlog.Models
         public string Content { get; set; }
         public bool IsPublished { get; set; } = false;
         public bool IsActive { get; set; } = true;
+        /// <summary>
+        /// This will hold the category
+        /// </summary>
+        public Category Category { get; set; }
+        public int CategoryKey
+        {
+            get
+            {
+                if (Category != null)
+                {
+                    return Category.CategoryKey;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+            set
+            {
+                if (Category == null)
+                {
+                    Category = new Category()
+                    {
+                        CategoryKey = value
+                    };
+                }
+            }
+        }
         public Blog Blog { get; set; }
         public int BlogKey { get
             {

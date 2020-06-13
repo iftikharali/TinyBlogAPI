@@ -13,7 +13,6 @@
       ,U.[About] OwnerAbout
       ,U.[ImageUrl]
       
-	   [CategoryKey]
       ,[Url]
       ,[SortUrl]
       ,[Content]

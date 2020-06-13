@@ -39,34 +39,7 @@ namespace TinyBlog.Models
         /// </summary>
         public Dictionary<string,string> MetaTag { get; set; }
         public string BrowserTitle { get; set; }
-        /// <summary>
-        /// This will hold the category
-        /// </summary>
-        public Category Category { get; set; }
-        public int CategoryKey
-        {
-            get
-            {
-                if (Category != null)
-                {
-                    return Category.CategoryKey;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-            set
-            {
-                if (Category == null)
-                {
-                    Category = new Category()
-                    {
-                        CategoryKey = value
-                    };
-                }
-            }
-        }
+        
         public User Owner { get; set; }
         public string Url { get {
                 return "blog/" + BlogKey + "/" + Title?.Replace(" ", "-");

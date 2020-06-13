@@ -47,8 +47,8 @@ namespace TinyBlog.Repositories
         public async Task<Post> CreatePost(ApplicationContext context, Post post)
         {
             using (SqlCommand command = this.helper.GetCommand(@"Insert into [dbo].[Post]
-                                                    (BlogKey,PostGuid,Title,SubTitle,MainContentImageUrl,MainContentImageSubtitle,BrowserTitle,AuthorKey,Url,Previous,Next,SortUrl,Content,CreatedBy,UpdatedBy) 
-                                                  values(@BlogKey,@PostGuid,@Title,@SubTitle,@MainContentImageUrl,@MainContentImageSubtitle,@BrowserTitle,@AuthorKey,@Url,@Previous,@Next,@SortUrl,@Content,@CreatedBy,@UpdatedBy)"))
+                                                    (BlogKey,PostGuid,Title,SubTitle,MainContentImageUrl,MainContentImageSubtitle,BrowserTitle,AuthorKey,Url,Previous,Next,SortUrl,Content,CategoryKey,CreatedBy,UpdatedBy) 
+                                                  values(@BlogKey,@PostGuid,@Title,@SubTitle,@MainContentImageUrl,@MainContentImageSubtitle,@BrowserTitle,@AuthorKey,@Url,@Previous,@Next,@SortUrl,@Content,@CategoryKey,@CreatedBy,@UpdatedBy)"))
             {
 
                 command.Parameters.AddWithValue("@BlogKey", post.BlogKey);
@@ -64,6 +64,7 @@ namespace TinyBlog.Repositories
                 command.Parameters.AddWithValue("@Url", (object)post.Url ?? DBNull.Value);
                 command.Parameters.AddWithValue("@SortUrl", (object)post.SortUrl ?? DBNull.Value);
                 command.Parameters.AddWithValue("@Content", (object)post.Content ?? DBNull.Value);
+                command.Parameters.AddWithValue("@CategoryKey", (object)post.CategoryKey ?? DBNull.Value);
                 command.Parameters.AddWithValue("@CreatedBy", context.UserKey);
                 command.Parameters.AddWithValue("@UpdatedBy", context.UserKey);
                 try
@@ -125,7 +126,7 @@ namespace TinyBlog.Repositories
         public async Task<IEnumerable<Comment>> GetComments(ApplicationContext context, int post_Id)
         {
             List<Comment> comments = new List<Comment>();
-            using (SqlCommand command = this.helper.GetCommand("SELECT CommentKey, CommentGuid, ParentCommentKey, Content, PostKey, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, CreatorName, CreatorGuid, CreatorAbout, CreatorImageUrl FROM [dbo].[Comment_View] WHERE PostKey = @PostKey"))
+            using (SqlCommand command = this.helper.GetCommand("SELECT CommentKey, CommentGuid, ParentCommentKey, Content, PostKey, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, CreatorName, CreatorGuid, CreatorAbout, CreatorImageUrl FROM [dbo].[Comment_View] WHERE PostKey = @PostKey  ORDER BY UpdatedAt DESC"))
             {
 
                 command.Parameters.AddWithValue("@PostKey", post_Id);
@@ -177,6 +178,7 @@ namespace TinyBlog.Repositories
                             post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];
                             post.MainContentImageSubtitle = reader["MainContentImageSubtitle"] == DBNull.Value ? null : (string)reader["MainContentImageSubtitle"];
                             post.Content = reader.GetString("Content");
+                            post.CategoryKey = reader["CategoryKey"] == DBNull.Value ? 0 : (int)reader["CategoryKey"];
                             post.Previous = reader["Previous"] == DBNull.Value ? null : (string)reader["Previous"];
                             post.Next = reader["Next"] == DBNull.Value ? null : (string)reader["Next"];
                             post.Author = new User()
@@ -275,6 +277,7 @@ namespace TinyBlog.Repositories
                             post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];
                             post.MainContentImageSubtitle = reader["MainContentImageSubtitle"] == DBNull.Value ? null : (string)reader["MainContentImageSubtitle"];
                             post.Content = reader.GetString("Content");
+                            post.CategoryKey = reader["CategoryKey"] == DBNull.Value ? 0 : (int)reader["CategoryKey"];
                             post.Previous = reader["Previous"] == DBNull.Value ? null : (string)reader["Previous"];
                             post.Next = reader["Next"] == DBNull.Value ? null : (string)reader["Next"];
                             post.Author = new User()
@@ -369,7 +372,56 @@ namespace TinyBlog.Repositories
                             post.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
                             post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];
                             post.MainContentImageSubtitle = reader["MainContentImageSubtitle"] == DBNull.Value ? null : (string)reader["MainContentImageSubtitle"];
-                            post.Content = reader.GetString("Content");// "This is an amazing blog and is very tremendous looking and was when created broke all the records and still it is continuing. When ever there is an event there will be an amaxing instances",
+                            post.Content = reader.GetString("Content");
+                            post.CategoryKey = reader["CategoryKey"] == DBNull.Value ? 0 : (int)reader["CategoryKey"];
+                            post.Author = new User()
+                            {
+                                UserKey = reader.GetInt32("UserKey"),
+                                UserGuid = reader.GetGuid("UserGuid"),
+                                Name = reader.GetString("Name"),
+                                About = reader["About"] == DBNull.Value ? null : (string)reader["About"],
+                                BlogCount = reader.GetInt32("BlogCount"),
+                                PostCount = reader.GetInt32("PostCount"),
+                                ImageUrl = reader["ImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["ImageUrl"]
+                            };
+
+                            post.Blog = new Blog()
+                            {
+                                BlogKey = reader["BlogKey"] == DBNull.Value ? 0 : (int)reader["BlogKey"],
+                                BlogGuid = reader["BlogGuid"] == DBNull.Value ? Guid.Empty : (Guid)reader["BlogGuid"],
+                                Title = reader["BlogTitle"] == DBNull.Value ? string.Empty : (string)reader["BlogTitle"],
+                                MainContentImageUrl = reader["BlogMainContentImageUrl"] == DBNull.Value ? string.Empty : context.BaseUrl + (string)reader["BlogMainContentImageUrl"],
+                                SubscriberCount = reader.GetInt32("SubscriberCount")
+                            };
+                            post.Votes = reader.GetInt32("Votes");// 8987
+                            posts.Add(post);
+                        }
+                    }
+                }
+            }
+            return posts;
+        }
+
+        public async Task<IEnumerable<Post>> GetRecommendedPostAsync(ApplicationContext context, int postKey, int userKey)
+        {
+            List<Post> posts = new List<Post>();
+            using (SqlCommand command = this.helper.GetCommand("SELECT TOP(5) PostKey, PostGuid, Title, SubTitle, BrowserTitle, AuthorKey, Url, SortUrl, MainContentImageUrl, MainContentImageSubtitle, Content, CategoryKey, IsPublished, IsActive, IsDeleted, BlogKey, Views, Votes, Previous, Next, CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, UserKey,UserGuid,UserID,Name,About,ImageUrl,BlogCount,PostCount, BlogGuid, BlogTitle, BlogMainContentImageUrl, SubscriberCount FROM [dbo].[Post_View] order by Views"))
+            {
+                using (DbDataReader reader = await this.helper.ExecuteReaderAsync(command).ConfigureAwait(false))
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            Post post = new Post();
+                            post.PostKey = reader.GetInt32("PostKey");
+                            post.PostGuid = reader["PostGuid"] == DBNull.Value ? Guid.Empty : (Guid)reader["PostGuid"];
+                            post.Title = reader.GetString("Title");// "Blog Title " + i,
+                            post.SubTitle = reader.GetString("SubTitle");// "Amazing blog and its content",
+                            post.MainContentImageUrl = reader["MainContentImageUrl"] == DBNull.Value ? null : context.BaseUrl + (string)reader["MainContentImageUrl"];
+                            post.MainContentImageSubtitle = reader["MainContentImageSubtitle"] == DBNull.Value ? null : (string)reader["MainContentImageSubtitle"];
+                            post.Content = reader.GetString("Content");
+                            post.CategoryKey = reader["CategoryKey"] == DBNull.Value ? 0 : (int)reader["CategoryKey"];
                             post.Author = new User()
                             {
                                 UserKey = reader.GetInt32("UserKey"),

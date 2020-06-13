@@ -88,5 +88,10 @@ namespace TinyBlog.Services
         {
             return await this.postRepository.GetPostsByUser(context, UserKey);
         }
+
+        public async Task<IEnumerable<Post>> GetRecommendedPostAsync(ApplicationContext context, int postKey, int userKey)
+        {
+            return await this.postRepository.GetRecommendedPostAsync(context, postKey, userKey);
+        }
     }
 }

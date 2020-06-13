@@ -53,6 +53,15 @@ namespace TinyBlog.Controllers
         {
             return await this.postService.GetPostsByUser(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl), UserKey);
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("~/api/v1/recommendedpost/{PostKey}/{UserKey}")]
+        public async Task<IEnumerable<Post>> GetRecommendedPostAsync(int PostKey,int UserKey)
+        {
+            return await this.postService.GetRecommendedPostAsync(new ApplicationContext(this.GetIdentityKey(), _appSettings.BaseUrl),PostKey, UserKey);
+        }
+
         // POST: api/Posts
         [HttpPost,DisableRequestSizeLimit]
         public IActionResult Post([FromForm] Post post)

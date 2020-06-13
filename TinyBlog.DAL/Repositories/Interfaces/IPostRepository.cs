@@ -22,5 +22,6 @@ namespace TinyBlog.Repositories.Interfaces
         bool DeleteComment(ApplicationContext context, int Commentid);
         Task<bool> Vote(ApplicationContext context, int postId);
         Task<IEnumerable<Post>> GetPostsByUser(ApplicationContext context, int userKey);
+        Task<IEnumerable<Post>> GetRecommendedPostAsync(ApplicationContext context, int postKey, int userKey);
     }
 }
